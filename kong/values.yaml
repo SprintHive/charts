@@ -1,0 +1,23 @@
+Component: kong
+Name: kong
+Image: kong:0.10.3
+ImagePullPolicy: IfNotPresent
+KongDatabase: cassandra
+CassandraContactPoints: cassandra
+CassandraReplFactor: 2
+
+cassandra:
+  persistence:
+    size: 1Gi
+
+  resources:
+    requests:
+      memory: 1Gi
+      cpu: 250m
+    limits:
+      memory: 512M
+      cpu: 500m
+  config:
+    cluster_name: kong-cassandra
+    max_heap_size: 512M
+    heap_new_size: 512M
