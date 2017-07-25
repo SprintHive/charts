@@ -7,7 +7,7 @@ spec:
   ports:
   - name: kong-proxy
     port: 8080
-    targetPort: 8080
+    targetPort: 8000
     protocol: TCP
   selector:
     component: {{.Values.Component}}
