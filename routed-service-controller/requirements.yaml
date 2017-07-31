@@ -1,0 +1,4 @@
+dependencies:
+  - name: kong
+    version: 0.1.0
+    repository: file://../kong
