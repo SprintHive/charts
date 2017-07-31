@@ -22,9 +22,9 @@ spec:
           - name: KONG_DATABASE
             value: {{.Values.KongDatabase}}
           - name: KONG_CASSANDRA_CONTACT_POINTS
-            value: {{.Release.Name}}-{{.Values.CassandraContactPoints}}
+            value: {{.Values.CassandraContactPoints}}
           - name: KONG_CASSANDRA_KEYSPACE
-            value: kong
+            value: "{{ printf "%s_%s" .Release.Name .Values.Name | trunc 24 }}"
           - name: KONG_CASSANDRA_REPL_FACTOR
             value: "{{.Values.CassandraReplFactor}}"
           - name: KONG_HOST_IP

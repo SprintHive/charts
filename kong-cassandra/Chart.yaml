@@ -1,0 +1,3 @@
+name: kong-cassandra
+version: 1.0.0
+description: Decentralized NoSQL database for Kong API Gateways

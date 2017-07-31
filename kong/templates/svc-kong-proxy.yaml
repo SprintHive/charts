@@ -3,11 +3,17 @@ kind: Service
 metadata:
   name: kong-proxy
 spec:
-  type: ClusterIP
+  type: {{.Values.ProxyService.Type}}
   ports:
-  - name: kong-proxy
-    port: 8080
+  {{- if eq .Values.ProxyService.HttpEnabled true}}
+  - name: kong-proxy-http
+    port: 80
     targetPort: 8000
+    protocol: TCP
+  {{- end}}
+  - name: kong-proxy-https
+    port: 443
+    targetPort: 8443
     protocol: TCP
   selector:
     component: {{.Values.Component}}
