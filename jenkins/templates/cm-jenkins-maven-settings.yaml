@@ -1,0 +1,82 @@
+apiVersion: v1
+data:
+  settings.xml: |
+    <settings>
+      <!-- sets the local maven repository outside of the ~/.m2 folder for easier mounting of secrets and repo -->
+      <localRepository>${user.home}/.mvnrepository</localRepository>
+      <mirrors>
+        <mirror>
+          <id>nexus</id>
+          <mirrorOf>external:*</mirrorOf>
+          <url>http://nexus/content/groups/public</url>
+        </mirror>
+      </mirrors>
+
+      <!-- lets disable the download progress indicator that fills up logs -->
+      <interactiveMode>false</interactiveMode>
+
+      <servers>
+        <server>
+          <id>local-nexus</id>
+          <username>admin</username>
+          <password>admin123</password>
+        </server>
+        <server>
+          <id>nexus</id>
+          <username>admin</username>
+          <password>admin123</password>
+        </server>
+        <server>
+          <id>oss-sonatype-staging</id>
+          <username></username>
+          <password></password>
+        </server>
+      </servers>
+
+      <profiles>
+        <profile>
+          <id>nexus</id>
+          <properties>
+            <altDeploymentRepository>local-nexus::default::http://nexus/content/repositories/staging/</altDeploymentRepository>
+            <altReleaseDeploymentRepository>local-nexus::default::http://nexus/content/repositories/staging/</altReleaseDeploymentRepository>
+            <altSnapshotDeploymentRepository>local-nexus::default::http://nexus/content/repositories/snapshots/</altSnapshotDeploymentRepository>
+          </properties>
+          <repositories>
+            <repository>
+              <id>central</id>
+              <url>http://central</url>
+              <releases><enabled>true</enabled></releases>
+              <snapshots><enabled>true</enabled></snapshots>
+            </repository>
+          </repositories>
+          <pluginRepositories>
+            <pluginRepository>
+              <id>central</id>
+              <url>http://central</url>
+              <releases><enabled>true</enabled></releases>
+              <snapshots><enabled>true</enabled></snapshots>
+            </pluginRepository>
+          </pluginRepositories>
+        </profile>
+        <profile>
+          <id>release</id>
+          <properties>
+            <gpg.executable>gpg</gpg.executable>
+            <gpg.passphrase>mysecretpassphrase</gpg.passphrase>
+          </properties>
+        </profile>
+      </profiles>
+      <activeProfiles>
+        <!--make the profile active all the time -->
+        <activeProfile>nexus</activeProfile>
+      </activeProfiles>
+    </settings>
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: jenkins-maven-settings
+  labels:
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    component: "{{ .Release.Name }}-{{ .Values.Master.Name }}"
