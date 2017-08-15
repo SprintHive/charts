@@ -56,7 +56,7 @@ spec:
         - name: ES_JAVA_OPTS
           value: "{{.Values.Master.JavaOpts}}"
         - name: ES_PLUGINS_INSTALL
-          value: {{ template "elasticsearch.plugins" }}
+          value: {{ template "plugins" }}
         {{- if eq .Values.SearchGuard.Enabled true}}
         - name: TRANSPORT_TLS_KEY_PASS
           valueFrom:
@@ -105,10 +105,9 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: storage
-        annotations:
-          volume.beta.kubernetes.io/storage-class: {{.Values.Master.VolumeClaimTemplate.StorageClass}}
       spec:
         accessModes: ["ReadWriteOnce"]
+        storageClassName: {{.Values.Master.VolumeClaimTemplate.StorageClass}}
         resources:
           requests:
             storage: {{.Values.Master.VolumeClaimTemplate.RequestedStorage}}

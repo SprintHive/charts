@@ -1,6 +1,6 @@
 Component: elasticsearch
 Name: es
-Image: quay.io/sprinthive/docker-elasticsearch:dev
+Image: quay.io/sprinthive/docker-elasticsearch:openjdk
 ImagePullPolicy: IfNotPresent
 ClusterName: kube-es
 Plugins: ""
@@ -54,7 +54,7 @@ Data:
     TimeoutSecs: 1
   VolumeClaimTemplate:
     Enabled: true
-    StorageClass: magnetic
+    StorageClass: standard
     RequestedStorage: 50Gi
 
 Sgadmin:

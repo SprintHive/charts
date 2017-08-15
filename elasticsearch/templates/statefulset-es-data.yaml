@@ -54,7 +54,7 @@ spec:
         - name: ES_JAVA_OPTS
           value: {{.Values.Data.JavaOpts}}
         - name: ES_PLUGINS_INSTALL
-          value: {{ template "elasticsearch.plugins" }}
+          value: {{ template "plugins" }}
         {{- if eq .Values.SearchGuard.Enabled true}}
         - name: TRANSPORT_TLS_KEY_PASS
           valueFrom:
@@ -105,7 +105,7 @@ spec:
         name: storage
       spec:
         accessModes: ["ReadWriteOnce"]
-        storageClassName: magnetic
+        storageClassName: {{.Values.Data.VolumeClaimTemplate.StorageClass}}
         resources:
           requests:
             storage: {{.Values.Data.VolumeClaimTemplate.RequestedStorage}}
