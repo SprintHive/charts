@@ -1,0 +1,70 @@
+apiVersion: v1
+data:
+  elasticsearch.yml: |
+    cluster:
+      name: ${CLUSTER_NAME}
+
+    node:
+      master: ${NODE_MASTER}
+      data: ${NODE_DATA}
+      name: ${NODE_NAME}
+      ingest: ${NODE_INGEST}
+      max_local_storage_nodes: ${MAX_LOCAL_STORAGE_NODES}
+
+    network.host: 0.0.0.0
+
+    path:
+      data: /data/data
+      logs: /data/log
+
+    bootstrap:
+      memory_lock: true
+
+    http:
+      enabled: ${HTTP_ENABLE}
+      compression: true
+      cors:
+        enabled: ${HTTP_CORS_ENABLE}
+        allow-origin: ${HTTP_CORS_ALLOW_ORIGIN}
+
+    discovery:
+      zen:
+        ping.unicast.hosts: ${DISCOVERY_SERVICE}
+        minimum_master_nodes: ${NUMBER_OF_MASTERS}
+
+    {{- if eq .Values.SearchGuard.Enabled true}}
+    searchguard:
+      ssl:
+        transport:
+          enabled_protocols: "TLSv1.2"
+          keystore_filepath: keystore-transport.jks
+          keystore_alias: ${NODE_NAME_PREFIX}-${K8_STATEFULSET_ID}
+          keystore_password: ${TRANSPORT_TLS_KEY_PASS}
+          truststore_filepath: truststore-transport.jks
+          truststore_password: ${TRANSPORT_TLS_KEY_PASS}
+          enforce_hostname_verification: false
+        http:
+          enabled: ${HTTP_ENABLE}
+          enabled_protocols: "TLSv1.2"
+          clientauth_mode: OPTIONAL
+          keystore_filepath: keystore-https.jks
+          keystore_alias: ${NODE_NAME_PREFIX}-${K8_STATEFULSET_ID}
+          keystore_password: ${HTTPS_TLS_KEY_PASS}
+          truststore_filepath: truststore-https.jks
+          truststore_password: ${HTTPS_TLS_KEY_PASS}
+    {{- end}}
+  log4j2.properties: |
+    status = error
+
+    appender.console.type = Console
+    appender.console.name = console
+    appender.console.layout.type = PatternLayout
+    appender.console.layout.pattern = [%d{ISO8601}][%-5p][%-25c{1.}] %marker%m%n
+
+    rootLogger.level = info
+    rootLogger.appenderRef.console.ref = console
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: es-config
+  selfLink: /api/v1/namespaces//configmaps/es-config

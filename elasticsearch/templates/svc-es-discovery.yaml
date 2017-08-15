@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.Values.DiscoveryService.Name}}
+  labels:
+    component: {{.Values.Component}}
+    role: {{.Values.Master.Role}}
+spec:
+  selector:
+    component: {{.Values.Component}}
+    role: {{.Values.Master.Role}}
+  ports:
+  - name: transport
+    port: 9300
+    protocol: TCP
