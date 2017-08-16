@@ -1,9 +1,9 @@
 Component: elasticsearch
 Name: es
-Image: quay.io/sprinthive/elasticsearch:jdk-base
+Image: quay.io/sprinthive/elasticsearch:0.0.1
 ImagePullPolicy: IfNotPresent
 ClusterName: kube-es
-Plugins: ""
+Plugins: "x-pack"
 SearchGuard:
   Enabled: false
   Plugin: com.floragunn:search-guard-5:5.4.1-12

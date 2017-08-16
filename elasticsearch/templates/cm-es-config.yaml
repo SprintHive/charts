@@ -32,6 +32,12 @@ data:
         ping.unicast.hosts: ${DISCOVERY_SERVICE}
         minimum_master_nodes: ${NUMBER_OF_MASTERS}
 
+    xpack:
+      graph.enabled: false
+      ml.enabled: false
+      security.enabled: false
+      watcher.enabled: false
+
     {{- if eq .Values.SearchGuard.Enabled true}}
     searchguard:
       ssl:
