@@ -1,0 +1,3 @@
+Name: kibana
+Image: kibana:5.5.1
+ESEndpoint: elasticsearch.infra:9200

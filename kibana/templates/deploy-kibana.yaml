@@ -1,0 +1,29 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{.Values.Name}}
+  labels:
+    heritage: {{.Release.Service | quote }}
+    release: {{.Release.Name | quote }}
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+    app: {{.Values.Name}}
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        heritage: {{.Release.Service | quote }}
+        release: {{.Release.Name | quote }}
+        chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+        app: {{.Values.Name}}
+    spec:
+      containers:
+      - name: kibana
+        image: {{.Values.Image}}
+        env:
+        - name: KIBANA_ES_URL
+          value: {{.Values.ESEndpoint}}
+        ports:
+        - containerPort: 5601
+          name: http
+          protocol: TCP
