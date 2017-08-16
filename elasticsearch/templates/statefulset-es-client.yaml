@@ -54,7 +54,7 @@ spec:
         - name: ES_JAVA_OPTS
           value: {{.Values.Client.JavaOpts}}
         - name: ES_PLUGINS_INSTALL
-          value: {{ template "plugins" }}
+          value: {{ template "plugins" . }}
       {{- if eq .Values.SearchGuard.Enabled true}}
         - name: TRANSPORT_TLS_KEY_PASS
           valueFrom:
