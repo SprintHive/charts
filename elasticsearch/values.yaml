@@ -1,6 +1,6 @@
 Component: elasticsearch
 Name: es
-Image: quay.io/sprinthive/docker-elasticsearch:openjdk
+Image: quay.io/sprinthive/elasticsearch:jdk-base
 ImagePullPolicy: IfNotPresent
 ClusterName: kube-es
 Plugins: ""
@@ -12,50 +12,50 @@ Master:
   Role: master
   Replicas: 1
   MinimumMasters: 1
-  JavaOpts: "-Xms300m -Xmx300m"
-  CpuRequests: "250m"
-  CpuLimits: "250m"
-  MemoryRequests: "512Mi"
-  MemoryLimits: "712Mi"
+  JavaOpts: "-Xms450m -Xmx450m"
+  CpuRequests: "0.25"
+  CpuLimits: "0.25"
+  MemoryRequests: "800Mi"
+  MemoryLimits: "800Mi"
   LivenessTest:
     InitialDelaySecs: 600
     TimeoutSecs: 1
   VolumeClaimTemplate:
     Enabled: false
-    StorageClass: standard
+    StorageClass: gp2
     RequestedStorage: 1Gi
 
 Client:
   Role: client
   Replicas: 1
-  JavaOpts: "-Xms300m -Xmx300m"
-  CpuRequests: "250m"
-  CpuLimits: "250m"
-  MemoryRequests: "512Mi"
-  MemoryLimits: "712Mi"
+  JavaOpts: "-Xms1100m -Xmx1100m"
+  CpuRequests: "0.8"
+  CpuLimits: "1.2"
+  MemoryRequests: "1.5Gi"
+  MemoryLimits: "1.5Gi"
   LivenessTest:
     InitialDelaySecs: 600
     TimeoutSecs: 1
   VolumeClaimTemplate:
     Enabled: false
-    StorageClass: standard
+    StorageClass: gp2
     RequestedStorage: 1Gi
 
 Data:
   Role: data
-  Replicas: 1
-  JavaOpts: "-Xms300m -Xmx300m"
-  CpuRequests: "250m"
-  CpuLimits: "250m"
-  MemoryRequests: "512Mi"
-  MemoryLimits: "712Mi"
+  Replicas: 3
+  JavaOpts: "-Xms2500m -Xmx2500m"
+  CpuRequests: "1"
+  CpuLimits: "1.5"
+  MemoryRequests: "5.5Gi"
+  MemoryLimits: "5.5Gi"
   LivenessTest:
     InitialDelaySecs: 600
     TimeoutSecs: 1
   VolumeClaimTemplate:
     Enabled: true
-    StorageClass: standard
-    RequestedStorage: 50Gi
+    StorageClass: gp2
+    RequestedStorage: 100Gi
 
 Sgadmin:
   Role: sgadmin
