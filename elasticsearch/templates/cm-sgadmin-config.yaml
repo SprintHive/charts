@@ -1,3 +1,4 @@
+{{- if eq .Values.SearchGuard.Enabled true}}
 apiVersion: v1
 data:
   sg_action_groups.yml: |
@@ -263,3 +264,4 @@ kind: ConfigMap
 metadata:
   creationTimestamp: null
   name: sgadmin-config
+{{- end}}
