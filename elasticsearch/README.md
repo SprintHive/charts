@@ -3,9 +3,11 @@ A secure Elasticsearch (5.4.1) cluster on top of Kubernetes made easy.
 
 ### Table of Contents
 
+* [Abstract](#abstract)
 * [Important Notes](#important-notes)
 * [Pre-Requisites](#pre-requisites)
-* [Test (deploying & accessing)](#test)
+* [Install](#install)
+* [Accessing the service](#Accessing the service)
 * [Install plug-ins](#plugins)
 * [Clean up with Curator](#curator)
 * [Credits](#credits)
@@ -45,34 +47,32 @@ One can change this in the deployment descriptors available in this repository.
    - keystore-[transport|https].jks
      alias: es-[client|master|data]-[statefulset id]
 
-## Test
+### Install
 
-### Deploy
+To use this chart run ```helm install --name <name-suffix> . --namespace <namespace>```
 
-```
-git clone https://github.com/SprintHive/elasticsearch-chart
-helm install --name "v1" elasticsearch-chart
-```
+    # assuming that you are in the <PROJECT_HOME/elasticsearch> dir run
+    helm install --name esdb . --namespace infra    
+    
+    # To unistall this chart run 
+    helm delete --purge esdb    
 
 Wait for containers to be in the `Running` state with all containers `Ready` and check one of the Elasticsearch master nodes logs:
 ```
 $ kubectl get po,svc
 NAME                                 READY     STATUS    RESTARTS   AGE
-po/es-client-v1-0                   1/1       Running     0          8m
-po/es-client-v1-1                   1/1       Running     0          8m
-po/es-data-v1-0                     1/1       Running     0          8m
-po/es-data-v1-1                     1/1       Running     0          8m
-po/es-master-v1-0                   1/1       Running     0          8m
-po/es-master-v1-1                   1/1       Running     0          8m
-po/es-master-v1-2                   1/1       Running     0          8m
-po/es-sgadmin-v61                   0/1       Completed   0          8m
+po/es-master-esdb-0                   1/1       Running     0          8m
+po/es-client-esdb-0                   1/1       Running     0          8m
+po/es-data-esdb-0                     1/1       Running     0          8m
+po/es-data-esdb-1                     1/1       Running     0          8m
+po/es-data-esdb-2                     1/1       Running     0          8m
 
 NAME                          CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
 svc/elasticsearch             10.233.47.253   <none>        9200/TCP       8m
 svc/elasticsearch-discovery   10.233.30.229   <none>        9300/TCP       8m
 ```
 
-### Access the service
+### Accessing the service
 
 *Don't forget* that services in Kubernetes are only acessible from containers in the cluster. For different behavior one should [configure the creation of an external load-balancer](http://kubernetes.io/v1.1/docs/user-guide/services.html#type-loadbalancer). While it's supported within this example service descriptor, its usage is out of scope of this document, for now.
 
@@ -85,22 +85,22 @@ elasticsearch   10.233.47.253   <none>        9200/TCP         8m
 From any host on the Kubernetes cluster (that's running `kube-proxy` or similar), run:
 
 ```
-curl https://10.233.47.253:9200/ -H 'Authorization: Basic YWRtaW46YWRtaW4='
+curl http://elasticsearch:9200
 ```
 
 One should see something similar to the following:
 
 ```json
 {
-  "name" : "es-client-v1-0",
+  "name" : "es-client-esdb-0",
   "cluster_name" : "kube-es",
   "cluster_uuid" : "0xnwm8-xQ1mw-CUVgCUN2g",
   "version" : {
-    "number" : "5.4.1",
+    "number" : "5.5.1",
     "build_hash" : "2cfe0df",
     "build_date" : "2017-05-29T16:05:51.443Z",
     "build_snapshot" : false,
-    "lucene_version" : "6.5.1"
+    "lucene_version" : "6.6.0"
   },
   "tagline" : "You Know, for Search"
 }
