@@ -10,4 +10,4 @@ done
 
 cd packages
 helm repo index .
-aws s3 sync . s3://sprinthive-charts
+aws --profile sh-charts s3 sync . s3://sprinthive-charts
