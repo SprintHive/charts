@@ -1,0 +1,9 @@
+name: nexus
+version: 0.0.1
+description: An artifact repository
+keywords:
+  - maven
+  - nexus
+home: https://github.com/SprintHive/charts/
+sources:
+  - https://github.com/SprintHive/charts

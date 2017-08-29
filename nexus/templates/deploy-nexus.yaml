@@ -1,0 +1,85 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    fabric8.io/iconUrl: https://cdn.rawgit.com/fabric8io/fabric8-devops/master/nexus/src/main/fabric8/icon.png
+  labels:
+    project: nexus
+    provider: fabric8
+    version: 2.2.311
+  name: nexus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      project: nexus
+      provider: fabric8
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        fabric8.io/iconUrl: https://cdn.rawgit.com/fabric8io/fabric8-devops/master/nexus/src/main/fabric8/icon.png
+        pod.beta.kubernetes.io/init-containers: '[{"name":"init","image":"busybox","command":["chmod","777","/sonatype-work/storage"],"resources":{},"volumeMounts":[{"name":"nexus-storage","mountPath":"/sonatype-work/storage"}],"imagePullPolicy":"IfNotPresent"}]'
+      creationTimestamp:
+      labels:
+        project: nexus
+        provider: fabric8
+        version: 2.2.311
+    spec:
+      containers:
+      - env:
+        - name: KUBERNETES_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        image: fabric8/nexus:2.2.311
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /content/repositories/
+            port: 8081
+            scheme: HTTP
+          initialDelaySeconds: 180
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 10
+        name: nexus
+        ports:
+        - containerPort: 8081
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 10
+          httpGet:
+            path: /content/repositories/
+            port: 8081
+            scheme: HTTP
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 10
+        resources:
+          limits:
+            cpu: '0'
+            memory: '0'
+          requests:
+            cpu: '0'
+            memory: '0'
+        terminationMessagePath: /dev/termination-log
+        volumeMounts:
+        - mountPath: /sonatype-work/storage
+          name: nexus-storage
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: nexus-storage
+        persistentVolumeClaim:
+          claimName: nexus-storage
