@@ -26,10 +26,10 @@ persistence:
 ## ref: http://docs.datastax.com/en/archived/cassandra/2.0/cassandra/architecture/architecturePlanningHardware_c.html
 resources:
   requests:
-    memory: 1Gi
+    memory: 1.5Gi
     cpu: 600m
   limits:
-    memory: 1Gi
+    memory: 1.5Gi
     cpu: 1000m
 
 ## Change cassandra configuration paramaters below:
@@ -42,8 +42,8 @@ config:
   cluster_size: 3
   seed_size: 2
   num_tokens: 256
-  max_heap_size: 650M
-  heap_new_size: 650M
+  max_heap_size: 800M
+  heap_new_size: 175M
   ports:
     cql: 9042
     thrift: 9160
