@@ -49,3 +49,14 @@ spec:
         - name: surf-udp
           containerPort: 7946
           protocol: UDP
+        livenessProbe:
+          tcpSocket:
+            port: 8001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /status
+            port: admin
+          initialDelaySeconds: 30
+          periodSeconds: 10
