@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: zipkin
+  labels:
+      app: zipkin
+spec:
+  ports:
+   - port: {{ .Values.collector.queryPort }}
+     name: "http"
+     targetPort: {{ .Values.collector.queryPort }}
+  selector:
+    app: zipkin-collector
