@@ -8,7 +8,7 @@ metadata:
     release: {{ .Release.Name }}
   name: {{ template "fullname" . }}
 spec:
-  serviceName: {{ template "fullname" . }}
+  serviceName: {{ template "name" . }}
   replicas: {{ .Values.replicas }}
   template:
     metadata:
@@ -37,7 +37,7 @@ spec:
             - /work-dir/peer-finder
           args:
             - -on-start=/work-dir/on-start.sh
-            - "-service={{ template "fullname" . }}"
+            - "-service={{ template "name" . }}"
           imagePullPolicy: "{{ .Values.image.pullPolicy }}"
           env:
             - name: POD_NAMESPACE
