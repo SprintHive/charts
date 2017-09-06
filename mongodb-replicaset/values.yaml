@@ -28,7 +28,7 @@ podAnnotations: {}
 
 podAntiAffinity: "soft"
 
-resources: {}
+resources:
  limits:
    cpu: 0.5
    memory: 512Mi
