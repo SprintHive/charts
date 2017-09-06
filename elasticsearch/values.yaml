@@ -22,7 +22,7 @@ Master:
     TimeoutSecs: 1
   VolumeClaimTemplate:
     Enabled: false
-    StorageClass: gp2
+    StorageClass: standard
     RequestedStorage: 1Gi
 
 Client:
@@ -38,12 +38,12 @@ Client:
     TimeoutSecs: 1
   VolumeClaimTemplate:
     Enabled: false
-    StorageClass: gp2
+    StorageClass: standard
     RequestedStorage: 1Gi
 
 Data:
   Role: data
-  Replicas: 3
+  Replicas: 1
   JavaOpts: "-Xms2500m -Xmx2500m"
   CpuRequests: "1"
   CpuLimits: "1.5"
@@ -54,7 +54,7 @@ Data:
     TimeoutSecs: 1
   VolumeClaimTemplate:
     Enabled: true
-    StorageClass: gp2
+    StorageClass: standard
     RequestedStorage: 100Gi
 
 Sgadmin:

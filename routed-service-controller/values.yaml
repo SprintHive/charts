@@ -1,4 +1,4 @@
 Component: routed-service-controller
 Name: routed-service-controller
-Image: quay.io/sprinthive/routed-service-controller:latest
-ImagePullPolicy: IfNotPresent
+Image: routed-service-controller
+ImagePullPolicy: Never

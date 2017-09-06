@@ -49,7 +49,7 @@ configmap:
 storageMethod: elasticsearch
 
 elasticsearch:
-  hosts: elasticsearch.infra:9200
+  hosts: elasticsearch:9200
 
 node:
   cpus: 1
