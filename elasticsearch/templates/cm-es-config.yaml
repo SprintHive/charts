@@ -13,6 +13,9 @@ data:
 
     network.host: 0.0.0.0
 
+    gateway:
+      recover_after_time: 5m
+
     path:
       data: /data/data
       logs: /data/log
@@ -36,7 +39,7 @@ data:
       graph.enabled: false
       ml.enabled: false
       security.enabled: false
-      watcher.enabled: false
+      watcher.enabled: true
 
     {{- if eq .Values.SearchGuard.Enabled true}}
     searchguard:

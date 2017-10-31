@@ -12,7 +12,7 @@ Master:
   Role: master
   Replicas: 1
   MinimumMasters: 1
-  JavaOpts: "-Xms350m -Xmx350m"
+  JavaOpts: "-Xms300m -Xmx300m"
   CpuRequests: "0.25"
   CpuLimits: "0.25"
   MemoryRequests: "800Mi"
@@ -21,8 +21,8 @@ Master:
     InitialDelaySecs: 600
     TimeoutSecs: 1
   VolumeClaimTemplate:
-    Enabled: false
-    StorageClass: gp2
+    Enabled: true
+    StorageClass: gp2encrypted
     RequestedStorage: 1Gi
 
 Client:
@@ -44,7 +44,7 @@ Client:
 Data:
   Role: data
   Replicas: 3
-  JavaOpts: "-Xms2500m -Xmx2500m"
+  JavaOpts: "-Xms2000m -Xmx2000m"
   CpuRequests: "1"
   CpuLimits: "1.5"
   MemoryRequests: "5.5Gi"
@@ -54,7 +54,7 @@ Data:
     TimeoutSecs: 1
   VolumeClaimTemplate:
     Enabled: true
-    StorageClass: gp2
+    StorageClass: gp2encrypted
     RequestedStorage: 100Gi
 
 Sgadmin:
