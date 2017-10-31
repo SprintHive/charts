@@ -1,25 +1,25 @@
+{{- if eq .Values.ClusterProfile "production"}}
 apiVersion: apps/v1beta1
 kind: StatefulSet
 metadata:
-  name: "{{ printf "%s-%s-%s" .Values.Name .Values.Master.Role .Release.Name | trunc 24 }}"
+  name: "{{ printf "%s-%s-%s" .Values.Name .Values.Production.Master.Role .Release.Name | trunc 24 }}"
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
     chart: "{{.Chart.Name}}-{{.Chart.Version}}"
     component: {{.Values.Component}}
-    role: {{.Values.Master.Role}}
+    role: {{.Values.Production.Master.Role}}
 spec:
-  replicas: {{.Values.Master.Replicas}}
-  serviceName: {{.Values.Name}}-{{.Values.Master.Role}}
+  replicas: {{.Values.Production.Master.Replicas}}
   template:
     metadata:
       labels:
         component: {{.Values.Component}}
-        role: {{.Values.Master.Role}}
+        role: {{.Values.Production.Master.Role}}
     spec:
       serviceAccountName: {{.Values.Component}}
       containers:
-      - name: {{.Values.Name}}-{{.Values.Master.Role}}
+      - name: {{.Values.Name}}-{{.Values.Production.Master.Role}}
         securityContext:
           privileged: false
           capabilities:
@@ -40,11 +40,11 @@ spec:
         - name: CLUSTER_NAME
           value: {{.Values.ClusterName}}
         - name: NODE_NAME_PREFIX
-          value: {{.Values.Name}}-{{.Values.Master.Role}}
+          value: {{.Values.Name}}-{{.Values.Production.Master.Role}}
         - name: DISCOVERY_SERVICE
           value: {{.Values.DiscoveryService.Name}}
         - name: NUMBER_OF_MASTERS
-          value: "{{.Values.Master.MinimumMasters}}"
+          value: "{{.Values.Production.Master.MinimumMasters}}"
         - name: NODE_MASTER
           value: "true"
         - name: NODE_INGEST
@@ -54,14 +54,14 @@ spec:
         - name: HTTP_ENABLE
           value: "false"
         - name: ES_JAVA_OPTS
-          value: "{{.Values.Master.JavaOpts}}"
+          value: "{{.Values.Production.Master.JavaOpts}}"
         - name: ES_PLUGINS_INSTALL
           value: {{ template "plugins" . }}
         {{- if eq .Values.SearchGuard.Enabled true}}
         - name: TRANSPORT_TLS_KEY_PASS
           valueFrom:
             secretKeyRef:
-              name: es-{{.Values.Master.Role}}-transport-tls
+              name: es-{{.Values.Production.Master.Role}}-transport-tls
               key: key-password
         - name: HTTPS_TLS_KEY_PASS
           value: ""
@@ -72,16 +72,16 @@ spec:
           protocol: TCP
         resources:
           requests:
-            cpu: "{{.Values.Master.CpuRequests}}"
-            memory: "{{.Values.Master.MemoryRequests}}"
+            cpu: "{{.Values.Production.Master.CpuRequests}}"
+            memory: "{{.Values.Production.Master.MemoryRequests}}"
           limits:
-            cpu: "{{.Values.Master.CpuLimits}}"
-            memory: "{{.Values.Master.MemoryLimits}}"
+            cpu: "{{.Values.Production.Master.CpuLimits}}"
+            memory: "{{.Values.Production.Master.MemoryLimits}}"
         livenessProbe:
           tcpSocket:
             port: 9300
-          initialDelaySeconds: {{.Values.Master.LivenessTest.InitialDelaySecs}}
-          timeoutSeconds: {{.Values.Master.LivenessTest.TimeoutSecs}}
+          initialDelaySeconds: {{.Values.Production.Master.LivenessTest.InitialDelaySecs}}
+          timeoutSeconds: {{.Values.Production.Master.LivenessTest.TimeoutSecs}}
         volumeMounts:
         - name: storage
           mountPath: /data
@@ -93,7 +93,7 @@ spec:
           value: "esnode"
           effect: "NoExecute"
       volumes:
-      {{- if ne .Values.Master.VolumeClaimTemplate.Enabled true}}
+      {{- if ne .Values.Production.Master.VolumeClaimTemplate.Enabled true}}
       - name: storage
         emptyDir:
           medium: ""
@@ -101,14 +101,15 @@ spec:
       - name: configdir
         configMap:
           name: es-config
-  {{- if eq .Values.Master.VolumeClaimTemplate.Enabled true}}
+  {{- if eq .Values.Production.Master.VolumeClaimTemplate.Enabled true}}
   volumeClaimTemplates:
     - metadata:
         name: storage
       spec:
         accessModes: ["ReadWriteOnce"]
-        storageClassName: {{.Values.Master.VolumeClaimTemplate.StorageClass}}
+        storageClassName: {{.Values.Production.Master.VolumeClaimTemplate.StorageClass}}
         resources:
           requests:
-            storage: {{.Values.Master.VolumeClaimTemplate.RequestedStorage}}
+            storage: {{.Values.Production.Master.VolumeClaimTemplate.RequestedStorage}}
   {{- end}}
+{{- end}}

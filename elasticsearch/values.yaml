@@ -1,61 +1,16 @@
 Component: elasticsearch
 Name: es
 Image: quay.io/sprinthive/elasticsearch:0.0.2
+# Choose the cluster profile. This determines the cluster design and resource limits. Available options:
+# local: Designed to run on someone's laptop
+# production: Designed for high availability
+ClusterProfile: local
 ImagePullPolicy: IfNotPresent
 ClusterName: kube-es
-Plugins: "x-pack"
+Plugins: ""
 SearchGuard:
   Enabled: false
   Plugin: com.floragunn:search-guard-5:5.4.1-12
-
-Master:
-  Role: master
-  Replicas: 1
-  MinimumMasters: 1
-  JavaOpts: "-Xms300m -Xmx300m"
-  CpuRequests: "0.25"
-  CpuLimits: "0.25"
-  MemoryRequests: "800Mi"
-  MemoryLimits: "800Mi"
-  LivenessTest:
-    InitialDelaySecs: 600
-    TimeoutSecs: 1
-  VolumeClaimTemplate:
-    Enabled: true
-    StorageClass: gp2encrypted
-    RequestedStorage: 1Gi
-
-Client:
-  Role: client
-  Replicas: 1
-  JavaOpts: "-Xms1000m -Xmx1000m"
-  CpuRequests: "0.8"
-  CpuLimits: "1.2"
-  MemoryRequests: "1.5Gi"
-  MemoryLimits: "1.5Gi"
-  LivenessTest:
-    InitialDelaySecs: 600
-    TimeoutSecs: 1
-  VolumeClaimTemplate:
-    Enabled: false
-    StorageClass: gp2
-    RequestedStorage: 1Gi
-
-Data:
-  Role: data
-  Replicas: 3
-  JavaOpts: "-Xms2000m -Xmx2000m"
-  CpuRequests: "1"
-  CpuLimits: "1.5"
-  MemoryRequests: "5.5Gi"
-  MemoryLimits: "5.5Gi"
-  LivenessTest:
-    InitialDelaySecs: 600
-    TimeoutSecs: 1
-  VolumeClaimTemplate:
-    Enabled: true
-    StorageClass: gp2encrypted
-    RequestedStorage: 100Gi
 
 Sgadmin:
   Role: sgadmin
@@ -66,3 +21,77 @@ Service:
 
 DiscoveryService:
   Name: elasticsearch-discovery
+
+## Production Profile
+
+Production:
+
+  Master:
+    Role: master
+    Replicas: 1
+    MinimumMasters: 1
+    JavaOpts: "-Xms300m -Xmx300m"
+    CpuRequests: "0.25"
+    CpuLimits: "0.25"
+    MemoryRequests: "800Mi"
+    MemoryLimits: "800Mi"
+    LivenessTest:
+      InitialDelaySecs: 600
+      TimeoutSecs: 1
+    VolumeClaimTemplate:
+      Enabled: true
+      StorageClass: gp2encrypted
+      RequestedStorage: 1Gi
+
+  Client:
+    Role: client
+    Replicas: 1
+    JavaOpts: "-Xms1000m -Xmx1000m"
+    CpuRequests: "0.8"
+    CpuLimits: "1.5"
+    MemoryRequests: "1.5Gi"
+    MemoryLimits: "1.5Gi"
+    LivenessTest:
+      InitialDelaySecs: 600
+      TimeoutSecs: 1
+    VolumeClaimTemplate:
+      Enabled: false
+      StorageClass: gp2encrypted
+      RequestedStorage: 1Gi
+
+  Data:
+    Role: data
+    Replicas: 3
+    JavaOpts: "-Xms2000m -Xmx2000m"
+    CpuRequests: "1"
+    CpuLimits: "1.5"
+    MemoryRequests: "5.5Gi"
+    MemoryLimits: "5.5Gi"
+    LivenessTest:
+      InitialDelaySecs: 600
+      TimeoutSecs: 1
+    VolumeClaimTemplate:
+      Enabled: true
+      StorageClass: gp2encrypted
+      RequestedStorage: 100Gi
+
+## Local Profile
+
+Local:
+
+  SingleNode:
+    Role: local
+    Replicas: 1
+    MinimumMasters: 1
+    JavaOpts: "-Xms600m -Xmx600m"
+    CpuRequests: "0.3"
+    CpuLimits: "1"
+    MemoryRequests: "1.0Gi"
+    MemoryLimits: "1.0Gi"
+    LivenessTest:
+      InitialDelaySecs: 600
+      TimeoutSecs: 1
+    VolumeClaimTemplate:
+      Enabled: false
+      StorageClass: standard
+      RequestedStorage: 5Gi

@@ -1,16 +1,18 @@
+{{- if eq .Values.ClusterProfile "production"}}
 apiVersion: v1
 kind: Service
 metadata:
   name: {{.Values.Service.Name}}
   labels:
     component: {{.Values.Component}}
-    role: {{.Values.Client.Role}}
+    role: {{.Values.Production.Client.Role}}
 spec:
   type: ClusterIP
   selector:
     component: {{.Values.Component}}
-    role: {{.Values.Client.Role}}
+    role: {{.Values.Production.Client.Role}}
   ports:
   - name: http
     port: 9200
     protocol: TCP
+{{- end}}

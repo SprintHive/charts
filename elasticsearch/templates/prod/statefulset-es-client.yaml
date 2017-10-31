@@ -1,25 +1,25 @@
+{{- if eq .Values.ClusterProfile "production"}}
 apiVersion: apps/v1beta1
 kind: StatefulSet
 metadata:
-  name: "{{ printf "%s-%s-%s" .Values.Name .Values.Data.Role .Release.Name | trunc 24 }}"
+  name: "{{ printf "%s-%s-%s" .Values.Name .Values.Production.Client.Role .Release.Name | trunc 24 }}"
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
     chart: "{{.Chart.Name}}-{{.Chart.Version}}"
     component: {{.Values.Component}}
-    role: {{.Values.Data.Role}}
+    role: {{.Values.Production.Client.Role}}
 spec:
-  replicas: {{.Values.Data.Replicas }}
-  serviceName: {{.Values.Name}}-{{.Values.Master.Role}}
+  replicas: {{.Values.Production.Client.Replicas }}
   template:
     metadata:
       labels:
         component: {{.Values.Component}}
-        role: {{.Values.Data.Role}}
+        role: {{.Values.Production.Client.Role}}
     spec:
       serviceAccountName: {{.Values.Component}}
       containers:
-      - name: {{.Values.Name}}-{{.Values.Data.Role}}
+      - name: {{.Values.Name}}-{{.Values.Production.Client.Role}}
         securityContext:
           privileged: false
           capabilities:
@@ -40,46 +40,56 @@ spec:
         - name: CLUSTER_NAME
           value: {{.Values.ClusterName}}
         - name: NODE_NAME_PREFIX
-          value: {{.Values.Name}}-{{.Values.Data.Role}}
+          value: {{.Values.Name}}-{{.Values.Production.Client.Role}}
         - name: DISCOVERY_SERVICE
           value: {{.Values.DiscoveryService.Name}}
         - name: NODE_MASTER
           value: "false"
+        - name: NODE_DATA
+          value: "false"
         - name: NODE_INGEST
           value: "true"
-        - name: NODE_DATA
-          value: "true"
         - name: HTTP_ENABLE
-          value: "false"
+          value: "true"
         - name: ES_JAVA_OPTS
-          value: {{.Values.Data.JavaOpts}}
+          value: {{.Values.Production.Client.JavaOpts}}
         - name: ES_PLUGINS_INSTALL
           value: {{ template "plugins" . }}
-        {{- if eq .Values.SearchGuard.Enabled true}}
+      {{- if eq .Values.SearchGuard.Enabled true}}
         - name: TRANSPORT_TLS_KEY_PASS
           valueFrom:
             secretKeyRef:
-              name: es-{{.Values.Data.Role}}-transport-tls
+              name: es-{{.Values.Production.Client.Role}}-https-tls
               key: key-password
         - name: HTTPS_TLS_KEY_PASS
-          value: ""
-        {{- end}}
+          valueFrom:
+            secretKeyRef:
+              name: es-{{.Values.Production.Client.Role}}-transport-tls
+              key: key-password
+      {{- end}}
         ports:
+        - containerPort: 9200
+          name: http
+          protocol: TCP
         - containerPort: 9300
           name: transport
           protocol: TCP
         resources:
           requests:
-            cpu: "{{.Values.Data.CpuRequests}}"
-            memory: "{{.Values.Data.MemoryRequests}}"
+            cpu: "{{.Values.Production.Client.CpuRequests}}"
+            memory: "{{.Values.Production.Client.MemoryRequests}}"
           limits:
-            cpu: "{{.Values.Data.CpuLimits}}"
-            memory: "{{.Values.Data.MemoryLimits}}"
+            cpu: "{{.Values.Production.Client.CpuLimits}}"
+            memory: "{{.Values.Production.Client.MemoryLimits}}"
         livenessProbe:
           tcpSocket:
             port: 9300
-          initialDelaySeconds: {{.Values.Data.LivenessTest.InitialDelaySecs}}
-          timeoutSeconds: {{.Values.Data.LivenessTest.TimeoutSecs}}
+          initialDelaySeconds: {{.Values.Production.Client.LivenessTest.InitialDelaySecs}}
+          timeoutSeconds: {{.Values.Production.Client.LivenessTest.TimeoutSecs}}
+        readinessProbe:
+          tcpSocket:
+            port: 9200
+          timeoutSeconds: 5
         volumeMounts:
         - name: storage
           mountPath: /data
@@ -91,7 +101,7 @@ spec:
           value: "esnode"
           effect: "NoExecute"
       volumes:
-      {{- if ne .Values.Data.VolumeClaimTemplate.Enabled true}}
+      {{- if ne .Values.Production.Client.VolumeClaimTemplate.Enabled true}}
       - name: storage
         emptyDir:
           medium: ""
@@ -99,14 +109,15 @@ spec:
       - name: configdir
         configMap:
           name: es-config
-  {{- if eq .Values.Data.VolumeClaimTemplate.Enabled true}}
+  {{- if eq .Values.Production.Client.VolumeClaimTemplate.Enabled true}}
   volumeClaimTemplates:
     - metadata:
         name: storage
       spec:
         accessModes: ["ReadWriteOnce"]
-        storageClassName: {{.Values.Data.VolumeClaimTemplate.StorageClass}}
+        storageClassName: {{.Values.Production.Client.VolumeClaimTemplate.StorageClass}}
         resources:
           requests:
-            storage: {{.Values.Data.VolumeClaimTemplate.RequestedStorage}}
+            storage: {{.Values.Production.Client.VolumeClaimTemplate.RequestedStorage}}
   {{- end}}
+{{- end }}

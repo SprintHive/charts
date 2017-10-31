@@ -35,11 +35,14 @@ data:
         ping.unicast.hosts: ${DISCOVERY_SERVICE}
         minimum_master_nodes: ${NUMBER_OF_MASTERS}
 
+    {{- if eq .Values.Plugins "x-pack"}}
     xpack:
       graph.enabled: false
       ml.enabled: false
       security.enabled: false
       watcher.enabled: true
+      watcher.enabled: false
+    {{- end}}
 
     {{- if eq .Values.SearchGuard.Enabled true}}
     searchguard:
@@ -188,7 +191,7 @@ data:
     #
     # WARNING: This option will be removed in Elasticsearch 6.0.0 and is provided
     # only for migration purposes.
-    #-Delasticsearch.json.allow_unquoted_field_names=true 
+    #-Delasticsearch.json.allow_unquoted_field_names=true
 kind: ConfigMap
 metadata:
   creationTimestamp: null
