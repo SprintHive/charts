@@ -6,7 +6,7 @@
 Master:
   Name: jenkins-master
   Image: "jenkins/jenkins"
-  ImageTag: "2.72-alpine"
+  ImageTag: "2.87-alpine"
   ImagePullPolicy: "IfNotPresent"
   Component: "jenkins-master"
   UseSecurity: true
@@ -39,11 +39,12 @@ Master:
 # JMXPort: 4000
 # List of plugins to be install during Jenkins master start
   InstallPlugins:
+      - script-security:1.34
       - kubernetes:0.11
       - workflow-aggregator:2.5
-      - workflow-job:2.13
-      - credentials-binding:1.12
-      - git:3.4.0
+      - workflow-job:2.15
+      - credentials-binding:1.13
+      - git:3.6.3
       - amazon-ecr:1.6
 # Used to approve a list of groovy functions in pipelines used the script-security plugin. Can be viewed under /scriptApproval
   ScriptApproval:
@@ -53,6 +54,18 @@ Master:
   #   - "new groovy.json.JsonSlurperClassic"
 # List of groovy init scripts to be executed during Jenkins master start
   InitScripts:
+     - |
+        import org.jenkinsci.plugins.workflow.libs.*;
+        import jenkins.plugins.git.GitSCMSource;
+        import java.util.Collections;
+
+        GlobalLibraries globalLibraries = GlobalLibraries.get();
+
+        LibraryConfiguration shLibrary = new LibraryConfiguration("github.com/SprintHive/sprinthive-pipeline-library", new SCMSourceRetriever(new GitSCMSource(null, "https://github.com/SprintHive/sprinthive-pipeline-library.git", "", "origin", "+refs/heads/*:refs/remotes/origin/*", "*", "", true)));
+        shLibrary.setDefaultVersion("nonf8");
+        shLibrary.setAllowVersionOverride(true);
+
+        globalLibraries.setLibraries(Collections.singletonList(shLibrary));
 #  - |
 #    print 'adding global pipeline libraries, register properties, bootstrap jobs...'
   CustomConfigMap: false

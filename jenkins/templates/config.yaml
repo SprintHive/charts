@@ -99,6 +99,9 @@ data:
       <primaryView>All</primaryView>
       <slaveAgentPort>50000</slaveAgentPort>
       <label></label>
+      <crumbIssuer class="hudson.security.csrf.DefaultCrumbIssuer">
+        <excludeClientIPFromCrumb>false</excludeClientIPFromCrumb>
+      </crumbIssuer>
       <nodeProperties/>
       <globalNodeProperties/>
       <noUsageStatistics>true</noUsageStatistics>
