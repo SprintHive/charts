@@ -27,3 +27,7 @@ spec:
         - containerPort: 5601
           name: http
           protocol: TCP
+        {{- if eq .Values.XPackEnabled "false" }}
+        command: [ "/bin/bash", "-c", "/usr/share/kibana/bin/kibana-plugin remove x-pack; /usr/local/bin/kibana-docker" ]
+        {{- end }}
+
