@@ -1,19 +1,14 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  annotations:
-    fabric8.io/iconUrl: https://cdn.rawgit.com/fabric8io/fabric8-devops/master/nexus/src/main/fabric8/icon.png
   labels:
-    project: nexus
-    provider: fabric8
-    version: 2.2.311
-  name: nexus
+    project: {{ .Values.name }}
+  name: {{ .Values.name }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      project: nexus
-      provider: fabric8
+      project: {{ .Values.name }}
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -21,15 +16,18 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      annotations:
-        fabric8.io/iconUrl: https://cdn.rawgit.com/fabric8io/fabric8-devops/master/nexus/src/main/fabric8/icon.png
-        pod.beta.kubernetes.io/init-containers: '[{"name":"init","image":"busybox","command":["chmod","777","/sonatype-work/storage"],"resources":{},"volumeMounts":[{"name":"nexus-storage","mountPath":"/sonatype-work/storage"}],"imagePullPolicy":"IfNotPresent"}]'
-      creationTimestamp:
       labels:
-        project: nexus
-        provider: fabric8
-        version: 2.2.311
+        project: {{ .Values.name }}
     spec:
+      initContainers:
+        - name: init
+          image: busybox
+          command: [ "chmod", "777", "/sonatype-work/storage" ]
+          resources: {}
+          volumeMounts:
+          - name: nexus-storage
+            mountPath: "/sonatype-work/storage"
+          imagePullPolicy: IfNotPresent
       containers:
       - env:
         - name: KUBERNETES_NAMESPACE
@@ -37,7 +35,7 @@ spec:
             fieldRef:
               apiVersion: v1
               fieldPath: metadata.namespace
-        image: fabric8/nexus:2.2.311
+        image: {{ .Values.image }}
         imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 3
@@ -49,7 +47,7 @@ spec:
           periodSeconds: 10
           successThreshold: 1
           timeoutSeconds: 10
-        name: nexus
+        name: {{ .Values.name }}
         ports:
         - containerPort: 8081
           name: http

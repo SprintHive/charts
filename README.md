@@ -119,8 +119,9 @@ Now install the chart
 
     helm install --name kibana --namespace infra .
 
-###  
+### Install Nexus 
 
+    helm install --name nexus --namespace infra .
 
 ## How to use this repo
 
