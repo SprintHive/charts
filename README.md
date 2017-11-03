@@ -17,6 +17,8 @@ helm
 
 ### Configure your minikube
 
+> For these changes to be applied you must delete your node.
+
     minikube config set memory 4096
 
 ### Add tiler to your cluster
