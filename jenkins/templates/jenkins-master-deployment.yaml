@@ -24,44 +24,6 @@ spec:
         component: "{{ .Release.Name }}-{{ .Values.Master.Component }}"
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/config.yaml") . | sha256sum }}
-        pod.alpha.kubernetes.io/init-containers: '[
-              {
-                  "name": "copy-default-config",
-                  "image": "{{ .Values.Master.Image }}:{{ .Values.Master.ImageTag }}",
-                  "imagePullPolicy": "{{ .Values.Master.ImagePullPolicy }}",
-                  "command": [ "sh", "/var/jenkins_config/apply_config.sh" ],
-                  "volumeMounts": [
-                      {
-                          "name": "jenkins-config",
-                          "mountPath": "/var/jenkins_config"
-                      },
-                      {
-                          "name": "jenkins-home",
-                          "mountPath": "/var/jenkins_home"
-                      },
-                      {
-                          "name": "plugin-dir",
-                          "mountPath": "/usr/share/jenkins/ref/plugins/"
-                      },
-                      {
-                          "name": "secrets-dir",
-                          "mountPath": "/usr/share/jenkins/ref/secrets/"
-                      }
-                  ]
-              },
-              {
-                  "name": "copy-kubernetes-plugin",
-                  "image": "{{ .Values.Master.Image }}:{{ .Values.Master.ImageTag }}",
-                  "imagePullPolicy": "{{ .Values.Master.ImagePullPolicy }}",
-                  "command": [ "curl", "-L", "https://github.com/fabric8io/jenkins-docker/raw/master/plugins/kubernetes-pipeline-devops-steps.hpi", "-o", "/usr/share/jenkins/ref/plugins/kubernetes-pipeline-devops-steps.hpi" ],
-                  "volumeMounts": [
-                      {
-                          "name": "plugin-dir",
-                          "mountPath": "/usr/share/jenkins/ref/plugins/"
-                      }
-                  ]
-              }
-          ]'
     spec:
       serviceAccount: {{ template "fullname" . }}
       {{- if .Values.Master.NodeSelector }}
@@ -74,6 +36,27 @@ spec:
       {{- end }}
       securityContext:
         runAsUser: 0
+      initContainers:
+        - name: "copy-default-config"
+          image: "{{ .Values.Master.Image }}:{{ .Values.Master.ImageTag }}"
+          imagePullPolicy: "{{ .Values.Master.ImagePullPolicy }}"
+          command: [ "sh", "/var/jenkins_config/apply_config.sh" ]
+          volumeMounts: 
+            - name: "jenkins-config"
+              mountPath: "/var/jenkins_config"
+            - name: "jenkins-home"
+              mountPath: "/var/jenkins_home"
+            - name: "plugin-dir"
+              mountPath: "/usr/share/jenkins/ref/plugins/"
+            - name: "secrets-dir"
+              mountPath: "/usr/share/jenkins/ref/secrets/"
+        - name: "copy-kubernetes-plugin"
+          image: "{{ .Values.Master.Image }}:{{ .Values.Master.ImageTag }}"
+          imagePullPolicy: "{{ .Values.Master.ImagePullPolicy }}"
+          command: [ "curl", "-L", "https://github.com/fabric8io/jenkins-docker/raw/master/plugins/kubernetes-pipeline-devops-steps.hpi", "-o", "/usr/share/jenkins/ref/plugins/kubernetes-pipeline-devops-steps.hpi" ]
+          volumeMounts:
+           - name: "plugin-dir"
+             mountPath: "/usr/share/jenkins/ref/plugins/"
       containers:
         - name: {{ template "fullname" . }}
           image: "{{ .Values.Master.Image }}:{{ .Values.Master.ImageTag }}"
