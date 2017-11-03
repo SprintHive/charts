@@ -206,3 +206,24 @@ In order to workaround this, set `NETWORK_HOST` environment variable in the pod 
 - name: "NETWORK_HOST"
   value: "_eth0_" #_p1p1_ if interface name is p1p1, ens4 would be _ens4_, etc
 ```
+
+### Another error you may come across when starting elasticsearch on minikube is:
+```
+[2017-10-31T11:45:49,167][INFO ][o.e.n.Node               ] [es-local-esdb-0] starting ...
+[2017-10-31T11:45:49,671][INFO ][o.e.t.TransportService   ] [es-local-esdb-0] publish_address {172.17.0.7:9300}, bound_addresses {[::]:9300}
+[2017-10-31T11:45:49,689][INFO ][o.e.b.BootstrapChecks    ] [es-local-esdb-0] bound or publishing to a non-loopback or non-link-local address, enforcing bootstrap checks
+ERROR: [1] bootstrap checks failed
+[1]: max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]
+[2017-10-31T11:45:49,731][INFO ][o.e.n.Node               ] [es-local-esdb-0] stopping ...
+[2017-10-31T11:45:49,837][INFO ][o.e.n.Node               ] [es-local-esdb-0] stopped
+[2017-10-31T11:45:49,837][INFO ][o.e.n.Node               ] [es-local-esdb-0] closing ...
+[2017-10-31T11:45:49,849][INFO ][o.e.n.Node               ] [es-local-esdb-0] closed
+```
+
+To solve this problem you need to ssh into the vm minikube is running on and increase the vm.max_map_count to 262144
+```
+minikube ssh
+sudo sysctl vm.max_map_count=262144
+exit
+```
+
