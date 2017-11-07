@@ -6,9 +6,9 @@ A collection for charts used by SprintHive
 
 This guide assumes that you have the following installed:
 
-minikube  
-kubectl  
-helm  
+* minikube  
+* kubectl  
+* helm  
 
 ### Adding the SprintHive charts repo to helm 
 
@@ -41,15 +41,19 @@ helm
 
 ## Installing the base stack
 
-* [elasticsearch](#Installing-Elasticsearch) 
-* [kibana](#Installing-Kibana)
-grafana
-prometheus
-kong
-kong-cassandra
-jenkins
-fluent-bit
-zipkin
+* [Elasticsearch](#elasticsearch) 
+* [Jenkins](#jenkins)
+* [Grafana](#grafana)
+* [Kibana](#kibana)
+* [Nexus](#nexus)
+* prometheus
+* kong
+* kong-cassandra
+* fluent-bit
+* zipkin
+
+
+<a id="elasticsearch">
 
 ### Installing Elasticsearch
     
@@ -92,6 +96,8 @@ Now install the chart
     # To uninstall the chart, do this:
     helm delete --purge esdb    
 
+<a id="jenkins">
+
 ### Installing Jenkins
 
     # In jenkins sub-directory:
@@ -100,7 +106,7 @@ Now install the chart
     # follow onscreen instructions to get your Jenkins admin password
       
     # Confirm jenkins is running as expected
-    kubectl port-forward -n infra es-local-esdb-0 9200
+    kubectl port-forward -n jenkins-jenkins-6b97b4dd65-ljsq7 8080
     # Browse to:
     http://localhost:8080
         
@@ -108,22 +114,29 @@ Now install the chart
     helm delete --purge jenkins
     
 
+<a id="grafana">
+
 ### Installing Grafana
 
-    # In grafana sub-directory
-    helm install --name grafana --namespace infra .
+    # Install from Kubernetes Charts
+    helm install --name grafana --namespace infra stable/grafana
       
     
+<a id="kibana">
 
 ### Installing Kibana
 
+    # In kibana sub-directory:
     helm install --name kibana --namespace infra .
+      
+
+<a id="nexus">
 
 ### Install Nexus 
 
     helm install --name nexus --namespace infra .
 
-## How to use this repo
+### How to use this repo
 
     git clone https://github.com/SprintHive/charts
 
