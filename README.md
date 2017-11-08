@@ -61,6 +61,7 @@ This guide assumes that you have the following installed:
 * [Grafana](#grafana)
 * [Kibana](#kibana)
 * [Nexus](#nexus)
+* [MongoDB](#mongodb)
 * prometheus
 * kong
 * kong-cassandra
@@ -149,8 +150,19 @@ Now install the chart
 
 ### Install Nexus 
 
+    # In nexus sub-directory:
     helm install --name nexus --namespace infra .
+      
+    
+<a id="mongodb">
 
-    
-    
-    
+### Install MongoDB 
+
+    # In mongodb sub-directory:
+    helm install --name mongodb --namespace infra .
+
+      
+### How to use this repo
+
+    git clone https://github.com/SprintHive/charts
+
