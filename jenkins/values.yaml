@@ -62,7 +62,7 @@ Master:
         GlobalLibraries globalLibraries = GlobalLibraries.get();
 
         LibraryConfiguration shLibrary = new LibraryConfiguration("github.com/SprintHive/sprinthive-pipeline-library", new SCMSourceRetriever(new GitSCMSource(null, "https://github.com/SprintHive/sprinthive-pipeline-library.git", "", "origin", "+refs/heads/*:refs/remotes/origin/*", "*", "", true)));
-        shLibrary.setDefaultVersion("nonf8");
+        shLibrary.setDefaultVersion("master");
         shLibrary.setAllowVersionOverride(true);
 
         globalLibraries.setLibraries(Collections.singletonList(shLibrary));
