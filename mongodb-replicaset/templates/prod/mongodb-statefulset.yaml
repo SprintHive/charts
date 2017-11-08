@@ -1,3 +1,4 @@
+{{- if eq .Values.clusterProfile "production"}}
 apiVersion: apps/v1beta1
 kind: StatefulSet
 metadata:
@@ -9,7 +10,7 @@ metadata:
   name: {{ template "fullname" . }}
 spec:
   serviceName: {{ template "name" . }}
-  replicas: {{ .Values.replicas }}
+  replicas: {{ .Values.production.replicas }}
   template:
     metadata:
       labels:
@@ -47,7 +48,7 @@ spec:
                   fieldPath: metadata.namespace
             - name: REPLICA_SET
               value: {{ .Values.replicaSet }}
-          {{- if .Values.auth.enabled }}
+          {{- if .Values.production.auth.enabled }}
             - name: AUTH
               value: "true"
             - name: ADMIN_USER
@@ -68,7 +69,7 @@ spec:
               mountPath: /config
             - name: datadir
               mountPath: /data/db
-          {{- if .Values.auth.enabled }}
+          {{- if .Values.production.auth.enabled }}
             - name: keydir
               mountPath: /keydir
               readOnly: true
@@ -81,11 +82,11 @@ spec:
             - name: peer
               containerPort: {{ .Values.port }}
           resources:
-{{ toYaml .Values.resources | indent 12 }}
+{{ toYaml .Values.production.resources | indent 12 }}
           command:
             - mongod
             - --config=/config/mongod.conf
-          {{- if .Values.auth.enabled }}
+          {{- if .Values.production.auth.enabled }}
           env:
             - name: AUTH
               value: "true"
@@ -123,7 +124,7 @@ spec:
               mountPath: /config
             - name: workdir
               mountPath: /work-dir
-          {{- if .Values.auth.enabled }}
+          {{- if .Values.production.auth.enabled }}
             - name: keydir
               mountPath: /keydir
               readOnly: true
@@ -153,7 +154,7 @@ spec:
         - name: config
           configMap:
             name: {{ template "fullname" . }}
-        {{- if .Values.auth.enabled }}
+        {{- if .Values.production.auth.enabled }}
         - name: keydir
           secret:
             defaultMode: 0400
@@ -161,28 +162,29 @@ spec:
         {{- end }}
         - name: workdir
           emptyDir: {}
-{{- if .Values.persistentVolume.enabled }}
+{{- if .Values.production.persistentVolume.enabled }}
   volumeClaimTemplates:
     - metadata:
         name: datadir
         annotations:
-        {{- if .Values.persistentVolume.storageClass | quote }}
-          volume.beta.kubernetes.io/storage-class: {{ .Values.persistentVolume.storageClass | quote }}
+        {{- if .Values.production.persistentVolume.storageClass | quote }}
+          volume.beta.kubernetes.io/storage-class: {{ .Values.production.persistentVolume.storageClass | quote }}
         {{- else }}
           volume.alpha.kubernetes.io/storage-class: default
         {{- end }}
-        {{- range $key, $value := .Values.persistentVolume.annotations }}
+        {{- range $key, $value := .Values.production.persistentVolume.annotations }}
           {{ $key }}: {{ $value }}
         {{- end }}
       spec:
         accessModes:
-        {{- range .Values.persistentVolume.accessModes }}
+        {{- range .Values.production.persistentVolume.accessModes }}
           - {{ . | quote }}
         {{- end }}
         resources:
           requests:
-            storage: {{ .Values.persistentVolume.size | quote }}
+            storage: {{ .Values.production.persistentVolume.size | quote }}
 {{- else }}
         - name: datadir
           emptyDir: {}
+{{- end }}
 {{- end }}

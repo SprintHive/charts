@@ -1,15 +1,8 @@
 replicaSet: rs0
-replicas: 3
 port: 27017
 nameOverride: mongodb
+clusterProfile: local
 
-auth:
-  enabled: false
-  # adminUser:
-  # adminPassword:
-  # key:
-  # existingKeySecret:
-  # existingAdminSecret:
 
 # Specs for the Docker image for the init container that establishes the replica set
 installImage:
@@ -28,25 +21,6 @@ podAnnotations: {}
 
 podAntiAffinity: "soft"
 
-resources:
- limits:
-   cpu: 0.5
-   memory: 512Mi
- requests:
-   cpu: 0.3
-   memory: 512Mi
-
-persistentVolume:
-  enabled: true
-  ## If defined, volume.beta.kubernetes.io/storage-class: <storageClass>
-  ## Default: volume.alpha.kubernetes.io/storage-class: default
-  ##
-  storageClass: gp2
-  accessModes:
-    - ReadWriteOnce
-  size: 10Gi
-  annotations: {}
-
 # Annotations to be added to the service
 serviceAnnotations: {}
 
@@ -61,3 +35,53 @@ configmap:
 # security:
 #   authorization: enabled
 #   keyFile: /keydir/key.txt
+
+
+## Local profile
+
+local:
+  replicas: 1
+  persistentVolume:
+    enabled: false
+
+  resources:
+   limits:
+     cpu: 0.5
+     memory: 512Mi
+   requests:
+     cpu: 0.3
+     memory: 512Mi
+
+  auth:
+    enabled: false
+
+## Production profile
+
+production:
+  replicas: 3
+  persistentVolume:
+    enabled: true
+    ## If defined, volume.beta.kubernetes.io/storage-class: <storageClass>
+    ## Default: volume.alpha.kubernetes.io/storage-class: default
+    ##
+    storageClass: gp2
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
+    annotations: {}
+
+  resources:
+   limits:
+     cpu: 0.5
+     memory: 512Mi
+   requests:
+     cpu: 0.3
+     memory: 512Mi
+
+  auth:
+    enabled: false
+    # adminUser:
+    # adminPassword:
+    # key:
+    # existingKeySecret:
+    # existingAdminSecret:
