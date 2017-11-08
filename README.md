@@ -22,7 +22,22 @@ This guide assumes that you have the following installed:
 
 > For these changes to be applied you must delete your node.
 
+    # set the memory
     minikube config set memory 4096
+    
+    # delete and start your minikube for the changes to take effect
+    minikube delete
+    minikube start
+        
+    # Confirm that your memory is 4096
+    kubectl describe node 
+    
+    # You should see something like this
+    ...        
+    Capacity:
+     cpu:		2
+     memory:	4046860Ki
+    ... 
 
 ### Add tiller to your cluster
 
@@ -106,7 +121,7 @@ Now install the chart
     # follow onscreen instructions to get your Jenkins admin password
       
     # Confirm jenkins is running as expected
-    kubectl port-forward -n jenkins-jenkins-6b97b4dd65-ljsq7 8080
+    kubectl port-forward -n infra <POD-NAME> 8080
     # Browse to:
     http://localhost:8080
         
@@ -136,11 +151,6 @@ Now install the chart
 
     helm install --name nexus --namespace infra .
 
-### How to use this repo
-
-    git clone https://github.com/SprintHive/charts
-
-
-See each sub-directory for further instructions    
+    
     
     
