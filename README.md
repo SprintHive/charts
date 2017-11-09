@@ -70,7 +70,7 @@ This guide assumes that you have the following installed:
 * [Kibana](#kibana)
 * [Nexus](#nexus)
 * [MongoDB](#mongodb)
-* prometheus
+* [Prometheus](#prometheus)
 * kong
 * kong-cassandra
 * fluent-bit
@@ -168,6 +168,22 @@ Now install the chart
 
     # In mongodb sub-directory:
     helm install --name mongodb --namespace infra .
+
+      
+<a id="prometheus">
+
+### Install Prometheus 
+
+    In prometheus sub-directory:
+    helm install --name prometheus --namespace infra .
+        
+    # Confirm Prometheus is running as expected
+    kubectl port-forward -n infra <POD-NAME> 9090
+    # Browse to:
+    http://localhost:9090
+        
+    # To uninstall the chart, do this:
+    helm delete --purge prometheus
 
       
 ### How to use this repo
