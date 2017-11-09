@@ -27,7 +27,7 @@ This guide assumes that you have the following installed:
     
     # delete and start your minikube for the changes to take effect
     minikube delete
-    minikube start
+    minikube start --extra-config=apiserver.Authorization.Mode=RBAC
         
     # Confirm that your memory is 4096
     kubectl describe node 
