@@ -71,9 +71,9 @@ This guide assumes that you have the following installed:
 * [Nexus](#nexus)
 * [MongoDB](#mongodb)
 * [Prometheus](#prometheus)
+* [fluent-bit](#fluent-bit)
 * kong
 * kong-cassandra
-* fluent-bit
 * zipkin
 
 
@@ -185,8 +185,12 @@ Now install the chart
     # To uninstall the chart, do this:
     helm delete --purge prometheus
 
+<a id="fluent-bit">
       
-### How to use this repo
+### Install Fluent bit
 
-    git clone https://github.com/SprintHive/charts
+    In fluent-bit sub-directory:
+    helm install --name fluent-bit --namespace infra .
+    
+    
 
