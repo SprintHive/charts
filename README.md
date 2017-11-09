@@ -72,6 +72,7 @@ This guide assumes that you have the following installed:
 * [MongoDB](#mongodb)
 * [Prometheus](#prometheus)
 * [fluent-bit](#fluent-bit)
+* [rabbitmq](#rabbitmq)
 * kong
 * kong-cassandra
 * zipkin
@@ -174,7 +175,7 @@ Now install the chart
 
 ### Install Prometheus 
 
-    In prometheus sub-directory:
+    # In prometheus sub-directory:
     helm install --name prometheus --namespace infra .
         
     # Confirm Prometheus is running as expected
@@ -189,8 +190,15 @@ Now install the chart
       
 ### Install Fluent bit
 
-    In fluent-bit sub-directory:
+    # In fluent-bit sub-directory:
     helm install --name fluent-bit --namespace infra .
+    
+<a id="rabbitmq">
+      
+### Install Rabbit MQ
+
+    # In rabbitmq sub-directory:
+    helm install --name rabbitmq --namespace infra .
     
     
 
