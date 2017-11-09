@@ -31,6 +31,8 @@ spec:
         - name: varlibdockercontainers
           mountPath: /var/lib/docker/containers
           readOnly: true
+        - name: vartmp
+          mountPath: /var/tmp
         - name: config
           mountPath: /fluent-bit/etc/fluent-bit.conf
           subPath: fluent-bit.conf
@@ -47,6 +49,9 @@ spec:
       - name: varlibdockercontainers
         hostPath:
           path: /var/lib/docker/containers
+      - name: vartmp
+        hostPath:
+          path: /var/tmp
       - name: config
         configMap:
           name: {{ template "fullname" . }}-config

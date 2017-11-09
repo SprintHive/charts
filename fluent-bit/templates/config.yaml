@@ -13,12 +13,14 @@ data:
         Parsers_File parsers.conf
 
     [INPUT]
-        Name          tail
-        Path          /var/log/containers/*.log
-        Parser        docker
-        Tag           kube.*
+        Name             tail
+        Path             /var/log/containers/*.log
+        Parser           docker
+        Tag              kube.*
         Refresh_Interval 5
-        Mem_Buf_Limit 5MB
+        Mem_Buf_Limit    5MB
+        Skip_Long_Lines  On
+        DB               /var/tmp/fluent-bit.db
 
     [INPUT]
         Name          tcp
@@ -26,6 +28,7 @@ data:
         Port          5170
         Chunk_Size    32
         Buffer_Size   64
+        Mem_Buf_Limit 5MB
 
     [FILTER]
         Name   kubernetes
