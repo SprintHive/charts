@@ -8,8 +8,8 @@ collector:
   probeStartupDelay: 150
   queryPort: 9411
   resources:
-    ramMb: 900
-    javaOptsHeap: 700
+    ramMb: 500
+    javaOptsHeap: 300
     cpuRequest: 150m
     cpuLimit: 200m
 
@@ -29,8 +29,8 @@ dependencies:
   cron: "0 22 * * *"
   imageVersion: 1.6.1
   resources:
-    ramMb: 900
-    javaOptsHeap: 700
+    ramMb: 300
+    javaOptsHeap: 200
     cpuRequest: 150m
     cpuLimit: 200m
 
