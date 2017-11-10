@@ -1,3 +1,4 @@
+{{- if eq .Values.clusterProfile "production"}}
 # A headless service to create DNS records
 apiVersion: v1
 kind: Service
@@ -22,3 +23,4 @@ spec:
   selector:
     app: {{ template "name" . }}
     release: {{ .Release.Name }}
+{{- end }}
