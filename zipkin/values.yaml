@@ -8,8 +8,8 @@ collector:
   probeStartupDelay: 150
   queryPort: 9411
   resources:
-    ramMb: 500
-    javaOptsHeap: 300
+    ramMb: 400
+    javaOptsHeap: 200
     cpuRequest: 150m
     cpuLimit: 200m
 
@@ -19,9 +19,9 @@ ui:
   probeStartupDelay: 150
   queryPort: 9411
   resources:
-    ramMb: 900
-    javaOptsHeap: 700
-    cpuRequest: 150m
+    ramMb: 300
+    javaOptsHeap: 200
+    cpuRequest: 200m
     cpuLimit: 200m
 
 dependencies:
@@ -31,7 +31,7 @@ dependencies:
   resources:
     ramMb: 300
     javaOptsHeap: 200
-    cpuRequest: 150m
+    cpuRequest: 200m
     cpuLimit: 200m
 
 configmap:
