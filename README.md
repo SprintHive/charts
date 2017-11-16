@@ -1,6 +1,10 @@
 # Charts
 
-A collection for charts used by SprintHive
+A collection for charts used by SprintHive. This repo is used by the "go" branch in the 
+[https://github.com/sprinthive/ship]() repo, which is currently under development.
+The final aim will be to uses these charts from the ship-cli and not to follow this guide. 
+
+This is a guide which will describe how these charts can be installed into minikube running on a laptop.   
 
 ## Getting started with minikube
 
@@ -20,7 +24,8 @@ This guide assumes that you have the following installed:
 
 ### Configure your minikube
 
-> For these changes to be applied you must delete your node.
+> If you already have an existing minikube, for these changes to be applied you must delete your node, 
+> as per the onscreen instructions
 
     # set the memory
     minikube config set memory 4096
@@ -73,20 +78,26 @@ This guide assumes that you have the following installed:
 * [Prometheus](#prometheus)
 * [fluent-bit](#fluent-bit)
 * [rabbitmq](#rabbitmq)
+* [zipkin](#zipkin)
 * kong
 * kong-cassandra
-* zipkin
 
 
 <a id="elasticsearch">
 
 ### Installing Elasticsearch
     
-To run elasticsearch we need to increase the vm.max_map_count to 262144  
+To run elasticsearch we need to increase the vm.max_map_count to 262144. 
+[See this link for more info](https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html)  
 
-    # ssh into minikube 
+> Warning this step has to be done every time you restart minikube
+
+    # ssh into minikube  
     minikube ssh
-    sudo sysctl vm.max_map_count=262144
+    
+    # create a file /var/lib/boot2docker/bootlocal.sh with the following contents sudo sysctl vm.max_map_count=262144
+
+    # exit the ssh session
     exit
     
 Now install the chart       
@@ -170,6 +181,32 @@ Now install the chart
     # In mongodb sub-directory:
     helm install --name mongodb --namespace infra .
 
+    # Confirm that this is running do a port-forward and connect to mongodb using a mongodb client
+    kubectl port-forward -n infra <POD-NAME> 27017
+    
+To access your mongodb instance to using mongodb you have to do 2 things.  
+
+Add the following line to your /etc/resolver/svc.cluster.local    
+See this [blog post](https://stevesloka.com/2017/05/19/access-minikube-services-from-host/) for more info. 
+
+    nameserver 10.0.0.10
+    domain svc.cluster.local
+    search svc.cluster.local default.svc.cluster.local infra.svc.cluster.local
+    options ndots:5 
+ 
+Add a route to your pods network so that mongodb.infra.svc.cluster.local will resolve to your minikube network    
+     
+    # Adding a route for your pod network
+    kubectl get po -n infra -o wide   
+      
+    NAMESPACE     NAME               READY     STATUS    RESTARTS   AGE   IP           NODE
+    ...
+    infra         mongodb-mongodb-0  1/1       Running   2          2d    172.17.0.13  minikube
+    ...
+    
+    # Adjust the following command so that it points to the IP range of your pod
+    sudo route -n add 172.17.0.0/24 $(minikube ip)      
+     
       
 <a id="prometheus">
 
@@ -199,6 +236,11 @@ Now install the chart
 
     # In rabbitmq sub-directory:
     helm install --name rabbitmq --namespace infra .
-    
-    
 
+<a id="zipkin">
+
+### Install Zipkin
+
+    # In the zipkin sub-directory:
+    helm install --name zipkin --namespace infra .
+    
