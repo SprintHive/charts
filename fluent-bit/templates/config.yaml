@@ -54,4 +54,5 @@ data:
         Port  {{ .Values.backend.es.port }}
         Logstash_Format On
         Retry_Limit False
+        Time_Key @fb_timestamp
 {{- end }}
