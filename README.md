@@ -14,7 +14,11 @@ This guide assumes that you have the following installed:
 * kubectl  
 * helm  
 
-### Adding the SprintHive charts repo to helm 
+### How to use this repo 
+
+    Depending if you want to tweak the config for any of the charts or not 
+
+#### Adding the SprintHive charts repo to helm
 
     # Clone the SprintHive charts repo
     git clone https://github.com/SprintHive/charts.git
@@ -24,24 +28,44 @@ This guide assumes that you have the following installed:
 
 ### Configure your minikube
 
+The next section we will configure the amount of memory and cpus minikube is allowed to use.   
+ * memory - as always with memory the recommended amount is as much as you can, the minimum is 5120   
+ * cpus - by default minikube is configured to use 2 which is will work but I like to bump it to 4 if possible.
+
 > If you already have an existing minikube, for these changes to be applied you must delete your node, 
-> as per the onscreen instructions
+as per the onscreen instructions
 
     # set the memory
-    minikube config set memory 4096
+    minikube config set memory 5120
     
-    # delete and start your minikube for the changes to take effect
+    # set the cpus
+    minikube config set cps 4
+    
+To run elasticsearch we need to increase the vm.max_map_count to 262144. 
+[See this link for more info](https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html)  
+
+    # ssh into minikube  
+    minikube ssh
+    
+    # create a file /var/lib/boot2docker/bootlocal.sh with the following contents sudo sysctl vm.max_map_count=262144
+
+    # exit the ssh session
+    exit
+
+Delete and start your minikube for the changes to take effect
+
     minikube delete
     minikube start --extra-config=apiserver.Authorization.Mode=RBAC
         
-    # Confirm that your memory is 4096
+Confirm that your memory is 4096 and your cpus is 4
+
     kubectl describe node 
     
     # You should see something like this
     ...        
     Capacity:
-     cpu:		2
-     memory:	4046860Ki
+     cpu:		4
+     memory:	5078412Ki
     ... 
 
 ### Add tiller to your cluster
@@ -69,6 +93,20 @@ This guide assumes that you have the following installed:
 
 ## Installing the base stack
 
+Some basic helm commands.
+
+Install a chart
+
+    # helm install --name <name> --namespace <name> <chartname>
+    # so for example to install elasticsearch into the infra namespace
+    helm install --name esdb --namespace infra /sprinthive/elasticsearch
+    
+Uninstall a chart
+
+    # helm del --purge <name>
+    # so for example to uninstall the elasticsearch chart
+    helm del --purge esdb                
+
 * [Elasticsearch](#elasticsearch) 
 * [Jenkins](#jenkins)
 * [Grafana](#grafana)
@@ -82,26 +120,10 @@ This guide assumes that you have the following installed:
 * kong
 * kong-cassandra
 
-
 <a id="elasticsearch">
 
 ### Installing Elasticsearch
-    
-To run elasticsearch we need to increase the vm.max_map_count to 262144. 
-[See this link for more info](https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html)  
-
-> Warning this step has to be done every time you restart minikube
-
-    # ssh into minikube  
-    minikube ssh
-    
-    # create a file /var/lib/boot2docker/bootlocal.sh with the following contents sudo sysctl vm.max_map_count=262144
-
-    # exit the ssh session
-    exit
-    
-Now install the chart       
-    
+        
     # In elasticsearch sub-directory:
     helm install --name esdb --namespace infra .
       
