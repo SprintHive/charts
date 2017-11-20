@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Usage
+# ./package.sh sprinthive-dev-charts
+
 rm -rf packages
 mkdir -p packages
 
@@ -10,7 +13,6 @@ declare -a packages=(
   "fluent-bit"
   "zipkin"
   "prometheus"
-  "grafana"
   "kibana"
   "jenkins"
   "nexus"
