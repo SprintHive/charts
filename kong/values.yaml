@@ -3,7 +3,7 @@ Name: kong
 Image: kong:0.10.3
 ImagePullPolicy: IfNotPresent
 KongDatabase: cassandra
-CassandraContactPoints: kong-cassandra.infra
+CassandraContactPoints: kong-cassandra.infra.svc.cluster.local
 CassandraReplFactor: 2
 
 ProxyService:
