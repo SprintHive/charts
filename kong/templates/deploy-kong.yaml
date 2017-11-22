@@ -14,6 +14,28 @@ spec:
       labels:
         component: {{.Values.Component}}
     spec:
+      initContainers:
+        - name: kong-migrate
+          image: {{.Values.Image}}
+          env:
+            - name: KONG_DATABASE
+              value: {{.Values.KongDatabase}}
+            - name: KONG_CASSANDRA_CONTACT_POINTS
+              value: {{.Values.CassandraContactPoints}}
+            - name: KONG_CASSANDRA_KEYSPACE
+              value: "{{ printf "%s_%s" .Release.Name .Values.Name | trunc 24 }}"
+            - name: KONG_CASSANDRA_REPL_FACTOR
+              value: "{{.Values.CassandraReplFactor}}"
+            - name: KONG_DB_UPDATE_PROPAGATION
+              value: "10"
+            - name: KONG_CASSANDRA_SCHEMA_CONSENSUS_TIMEOUT
+              value: "5000"
+            - name: KONG_HOST_IP
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: status.podIP
+          command: [ "/bin/sh", "-c", "KONG_CLUSTER_ADVERTISE=$(KONG_HOST_IP):7946 KONG_NGINX_DAEMON='off' kong migrations up" ]
       containers:
       - name: {{.Values.Name}}
         image: {{.Values.Image}}
@@ -27,6 +49,10 @@ spec:
             value: "{{ printf "%s_%s" .Release.Name .Values.Name | trunc 24 }}"
           - name: KONG_CASSANDRA_REPL_FACTOR
             value: "{{.Values.CassandraReplFactor}}"
+          - name: KONG_DB_UPDATE_PROPAGATION
+            value: "10"
+          - name: KONG_CASSANDRA_SCHEMA_CONSENSUS_TIMEOUT
+            value: "5000"
           - name: KONG_HOST_IP
             valueFrom:
               fieldRef:

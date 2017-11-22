@@ -1,6 +1,6 @@
 Component: kong
 Name: kong
-Image: kong:0.10.3
+Image: kong:0.11.1-alpine
 ImagePullPolicy: IfNotPresent
 KongDatabase: cassandra
 CassandraContactPoints: kong-cassandra.infra.svc.cluster.local
