@@ -10,6 +10,7 @@ declare -a packages=(
   "elasticsearch"
   "kong"
   "kong-cassandra"
+  "kong-ingress-controller"
   "fluent-bit"
   "zipkin"
   "prometheus"
