@@ -1,0 +1,3 @@
+name: kong-ingress-controller
+image: 'quay.io/koli/kong-ingress:v0.2.1-alpha'
+kongAdminUrl: http://kong-admin:8001

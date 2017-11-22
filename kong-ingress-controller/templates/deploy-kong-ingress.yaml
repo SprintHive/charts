@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}
+spec:
+  replicas: {{ .Values.replicas }}
+  template:
+    metadata:
+      labels:
+      {{- include "labels" . | indent 6 }}
+    spec:
+      serviceAccount: {{ template "name" . }}
+      terminationGracePeriodSeconds: 60
+      containers:
+      - name: kong-ingress
+        image: {{ .Values.image }}
+        args:
+        - --auto-claim
+        - --wipe-on-delete
+        - --kong-server={{ .Values.kongAdminUrl }}
+        - --v=4
+        - --logtostderr
+        - --tls-insecure
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace

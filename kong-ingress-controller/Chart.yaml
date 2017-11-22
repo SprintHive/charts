@@ -1,0 +1,10 @@
+name: kong-ingress-controller
+version: 0.0.1
+description: A kong ingress controller
+keywords:
+  - kong
+  - ingress controller
+home: https://github.com/SprintHive/charts/
+sources:
+  - https://github.com/koli/kong-ingress/
+  - https://github.com/SprintHive/charts
