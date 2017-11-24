@@ -1,3 +1,4 @@
-name: kong-ingress-controller
-image: 'quay.io/koli/kong-ingress:v0.2.1-alpha'
-kongAdminUrl: http://kong-admin:8001
+Component: kong-ingress-controller
+Name: kong-ingress-controller
+Image: quay.io/sprinthive/kong-ingress-controller:v0.0.3
+ImagePullPolicy: IfNotPresent
