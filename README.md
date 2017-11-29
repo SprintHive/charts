@@ -16,109 +16,40 @@ This guide assumes that you have the following installed:
 
 ### How to use this repo 
 
-    Depending if you want to tweak the config for any of the charts or not 
-
-#### Adding the SprintHive charts repo to helm
-
+If you would like to tweak some settings then clone the repo and then to run install a chart change to the 
+sub-directory and then run the helm install script. 
+    
     # Clone the SprintHive charts repo
     git clone https://github.com/SprintHive/charts.git
-    
-    # Add a repo to helm so that helm will find the sprinthive-charts 
-    # TODO: put elsewhere... helm repo add sprinthive-charts https://s3.eu-west-2.amazonaws.com/sprinthive-charts
 
-### Configure your minikube
+    # So for example to install the elasticearch    
+    cd elasticsearch           
+    helm install --name esdb --namespace infra .
 
-The next section we will configure the amount of memory and cpus minikube is allowed to use.   
- * memory - as always with memory the recommended amount is as much as you can, the minimum is 5120   
- * cpus - by default minikube is configured to use 2 which is will work but I like to bump it to 4 if possible.
-
-> If you already have an existing minikube, for these changes to be applied you must delete your node, 
-as per the onscreen instructions
-
-    # set the memory
-    minikube config set memory 5120
-    
-    # set the cpus
-    minikube config set cps 4
-    
-To run elasticsearch we need to increase the vm.max_map_count to 262144. 
-[See this link for more info](https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html)  
-
-    # ssh into minikube  
-    minikube ssh
-    
-    # create a file /var/lib/boot2docker/bootlocal.sh with the following contents sudo sysctl vm.max_map_count=262144
-
-    # exit the ssh session
-    exit
-
-Delete and start your minikube for the changes to take effect
-
-    minikube delete
-    minikube start --extra-config=apiserver.Authorization.Mode=RBAC
-        
-Confirm that your memory is 4096 and your cpus is 4
-
-    kubectl describe node 
-    
-    # You should see something like this
-    ...        
-    Capacity:
-     cpu:		4
-     memory:	5078412Ki
-    ... 
-
-### Add tiller to your cluster
-
-    helm init
-    
-    # Confirm that tiller pod has started
-    kubectl get po --all-namespaces
-      
-
-    # Output should be similar to this (STATUS = Running):
-    NAMESPACE     NAME                             READY     STATUS    RESTARTS   AGE
-    ...
-    kube-system   tiller-deploy-84b97f465c-j78gj   1/1       Running   0          15s
-    ...
-    
-### Replicate a permissive policy using RBAC role bindings.
-
-    # WARNING:
-    #   The following policy allows ALL service accounts to act as cluster administrators. Any application running in a container 
-    #   receives service account credentials automatically, and could perform any action against the API, including viewing secrets 
-    #   and modifying permissions. This is not a recommended policy.  
-    kubectl create clusterrolebinding permissive-binding --clusterrole=cluster-admin --user=admin --user=kubelet --group=system:serviceaccounts
-      
-
-## Installing the base stack
-
-Some basic helm commands.
-
-Install a chart
-
-    # helm install --name <name> --namespace <name> <chartname>
-    # so for example to install elasticsearch into the infra namespace
-    helm install --name esdb --namespace infra /sprinthive/elasticsearch
-    
 Uninstall a chart
 
     # helm del --purge <name>
     # so for example to uninstall the elasticsearch chart
     helm del --purge esdb                
 
+### Preparing minikube
+
+This is documented as part of the SHIP guide [read more here](https://github.com/SprintHive/ship/wiki/Preparing-minikube)
+
+## Installing the base stack
+
 * [Elasticsearch](#elasticsearch) 
 * [Jenkins](#jenkins)
 * [Grafana](#grafana)
 * [Kibana](#kibana)
 * [Nexus](#nexus)
-* [MongoDB](#mongodb)
 * [Prometheus](#prometheus)
 * [fluent-bit](#fluent-bit)
-* [rabbitmq](#rabbitmq)
 * [zipkin](#zipkin)
 * kong
 * kong-cassandra
+* [MongoDB](#mongodb)
+* [rabbitmq](#rabbitmq)
 
 <a id="elasticsearch">
 
@@ -198,9 +129,51 @@ Uninstall a chart
 
     # In nexus sub-directory:
     helm install --name repo --namespace infra .
-      
+
     # To uninstall the chart, do this:
     helm delete --purge repo
+      
+<a id="fluent-bit">
+      
+### Install Fluent bit
+
+    # In fluent-bit sub-directory:
+    helm install --name fluent-bit --namespace infra .
+    
+<a id="zipkin">
+
+### Install Zipkin
+
+    # In the zipkin sub-directory:
+    helm install --name tracing --namespace infra .
+    
+    # To uninstall the chart, do this:
+    helm delete --purge tracing
+              
+<a id="prometheus">
+
+### Install Prometheus 
+
+    # In prometheus sub-directory:
+    helm install --name metricdb --namespace infra .
+        
+    # Confirm Prometheus is running as expected
+    kubectl port-forward -n infra <POD-NAME> 9090
+    # Browse to:
+    http://localhost:9090
+        
+    # To uninstall the chart, do this:
+    helm delete --purge metricdb
+
+<a id="fluent-bit">
+      
+### Install Fluent bit
+
+    # In fluent-bit sub-directory:
+    helm install --name logcollect --namespace infra .
+
+    # To uninstall the chart, do this:
+    helm delete --purge logcollect
     
 <a id="mongodb">
 
@@ -231,31 +204,6 @@ will resolve to your minikube network
      
     # Create service
     kubectl expose deployment mongodb -n local --type=NodePort
-      
-<a id="prometheus">
-
-### Install Prometheus 
-
-    # In prometheus sub-directory:
-    helm install --name metricdb --namespace infra .
-        
-    # Confirm Prometheus is running as expected
-    kubectl port-forward -n infra <POD-NAME> 9090
-    # Browse to:
-    http://localhost:9090
-        
-    # To uninstall the chart, do this:
-    helm delete --purge metricdb
-
-<a id="fluent-bit">
-      
-### Install Fluent bit
-
-    # In fluent-bit sub-directory:
-    helm install --name logcollect --namespace infra .
-
-    # To uninstall the chart, do this:
-    helm delete --purge logcollect
     
 <a id="rabbitmq">
       
@@ -266,14 +214,4 @@ will resolve to your minikube network
     
     # To uninstall the chart, do this:
     helm delete --purge rabbitmq
-    
-<a id="zipkin">
-
-### Install Zipkin
-
-    # In the zipkin sub-directory:
-    helm install --name tracing --namespace infra .
-    
-    # To uninstall the chart, do this:
-    helm delete --purge tracing
     
