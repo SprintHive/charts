@@ -2,7 +2,7 @@
 
 A collection for charts used by SprintHive. This repo is used by the "go" branch in the 
 [https://github.com/sprinthive/ship]() repo, which is currently under development.
-The final aim will be to uses these charts from the ship-cli and not to follow this guide. 
+The intention is for users to use these charts via the ship-cli but this repo could be used if you want to use some of the charts. 
 
 This is a guide which will describe how these charts can be installed into minikube running on a laptop.   
 
@@ -125,10 +125,10 @@ Uninstall a chart
 ### Installing Elasticsearch
         
     # In elasticsearch sub-directory:
-    helm install --name esdb --namespace infra .
+    helm install --name logdb --namespace infra .
       
     # Confirm elasticsearch is running as expected
-    kubectl port-forward -n infra es-local-esdb-0 9200
+    kubectl port-forward -n infra es-local-logdb-0 9200
       
     curl http://localhost:9200/_cluster/health?pretty=true
     
@@ -152,14 +152,14 @@ Uninstall a chart
       }
       
     # To uninstall the chart, do this:
-    helm delete --purge esdb    
+    helm delete --purge logdb    
 
 <a id="jenkins">
 
 ### Installing Jenkins
 
     # In jenkins sub-directory:
-    helm install --name jenkins --namespace infra .
+    helm install --name cicd --namespace infra .
       
     # follow onscreen instructions to get your Jenkins admin password
       
@@ -169,7 +169,7 @@ Uninstall a chart
     http://localhost:8080
         
     # To uninstall the chart, do this:
-    helm delete --purge jenkins
+    helm delete --purge cicd
     
 
 <a id="grafana">
@@ -177,24 +177,30 @@ Uninstall a chart
 ### Installing Grafana
 
     # Install from Kubernetes Charts
-    helm install --name grafana --namespace infra stable/grafana
+    helm install --name metricviz --namespace infra stable/grafana
       
+    # To uninstall the chart, do this:
+    helm delete --purge metricviz
     
 <a id="kibana">
 
 ### Installing Kibana
 
     # In kibana sub-directory:
-    helm install --name kibana --namespace infra .
+    helm install --name logviz --namespace infra .
       
+    # To uninstall the chart, do this:
+    helm delete --purge logviz
 
 <a id="nexus">
 
 ### Install Nexus 
 
     # In nexus sub-directory:
-    helm install --name nexus --namespace infra .
+    helm install --name repo --namespace infra .
       
+    # To uninstall the chart, do this:
+    helm delete --purge repo
     
 <a id="mongodb">
 
@@ -231,7 +237,7 @@ will resolve to your minikube network
 ### Install Prometheus 
 
     # In prometheus sub-directory:
-    helm install --name prometheus --namespace infra .
+    helm install --name metricdb --namespace infra .
         
     # Confirm Prometheus is running as expected
     kubectl port-forward -n infra <POD-NAME> 9090
@@ -239,14 +245,17 @@ will resolve to your minikube network
     http://localhost:9090
         
     # To uninstall the chart, do this:
-    helm delete --purge prometheus
+    helm delete --purge metricdb
 
 <a id="fluent-bit">
       
 ### Install Fluent bit
 
     # In fluent-bit sub-directory:
-    helm install --name fluent-bit --namespace infra .
+    helm install --name logcollect --namespace infra .
+
+    # To uninstall the chart, do this:
+    helm delete --purge logcollect
     
 <a id="rabbitmq">
       
@@ -255,12 +264,16 @@ will resolve to your minikube network
     # In rabbitmq sub-directory:
     helm install --name rabbitmq --namespace local .
     
+    # To uninstall the chart, do this:
+    helm delete --purge rabbitmq
     
-
 <a id="zipkin">
 
 ### Install Zipkin
 
     # In the zipkin sub-directory:
-    helm install --name zipkin --namespace infra .
+    helm install --name tracing --namespace infra .
+    
+    # To uninstall the chart, do this:
+    helm delete --purge tracing
     
