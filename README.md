@@ -201,34 +201,30 @@ Uninstall a chart
 ### Install MongoDB 
 
     # In mongodb sub-directory:
-    helm install --name mongodb --namespace infra .
+    helm install --name mongodb --namespace local .
 
     # Confirm that this is running do a port-forward and connect to mongodb using a mongodb client
-    kubectl port-forward -n infra <POD-NAME> 27017
+    kubectl port-forward -n local <POD-NAME> 27017
     
-To access your mongodb instance to using mongodb you have to do 2 things.  
+To access your mongodb instance, you have to a add a route to your pods network so that mongodb.local.svc.cluster.local 
+will resolve to your minikube network    
 
-Add the following line to your /etc/resolver/svc.cluster.local    
-See this [blog post](https://stevesloka.com/2017/05/19/access-minikube-services-from-host/) for more info. 
 
-    nameserver 10.0.0.10
-    domain svc.cluster.local
-    search svc.cluster.local default.svc.cluster.local infra.svc.cluster.local
-    options ndots:5 
- 
-Add a route to your pods network so that mongodb.infra.svc.cluster.local will resolve to your minikube network    
      
     # Adding a route for your pod network
-    kubectl get po -n infra -o wide   
+    kubectl get po -n local -o wide   
       
     NAMESPACE     NAME               READY     STATUS    RESTARTS   AGE   IP           NODE
     ...
-    infra         mongodb-mongodb-0  1/1       Running   2          2d    172.17.0.13  minikube
+    local         mongodb-mongodb-0  1/1       Running   2          2d    172.17.0.13  minikube
     ...
     
-    # Adjust the following command so that it points to the IP range of your pod
+    # Adjust the following command so that it points to the IP range of your cluster
+    sudo route -n add 10.0.0.0/24 $(minikube ip)
     sudo route -n add 172.17.0.0/24 $(minikube ip)      
      
+    # Create service
+    kubectl expose deployment mongodb -n local --type=NodePort
       
 <a id="prometheus">
 
@@ -257,7 +253,9 @@ Add a route to your pods network so that mongodb.infra.svc.cluster.local will re
 ### Install Rabbit MQ
 
     # In rabbitmq sub-directory:
-    helm install --name rabbitmq --namespace infra .
+    helm install --name rabbitmq --namespace local .
+    
+    
 
 <a id="zipkin">
 
