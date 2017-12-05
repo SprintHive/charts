@@ -1,18 +1,14 @@
 # Charts
 
-A collection for charts used by SprintHive. This repo is used by the "go" branch in the 
-[https://github.com/sprinthive/ship]() repo, which is currently under development.
-The intention is for users to use these charts via the ship-cli but this repo could be used if you want to use some of the charts. 
+A collection for charts used by SprintHive. 
+The intention is for users to use these charts via the [https://github.com/sprinthive/ship](ship-cli) 
+but this repo could be used directly if you want to tweak some of the charts. 
 
 This is a guide which will describe how these charts can be installed into minikube running on a laptop.   
 
 ## Getting started with minikube
 
-This guide assumes that you have the following installed:
-
-* minikube  
-* kubectl  
-* helm  
+This is documented as part of the SHIP guide [read more here](https://github.com/SprintHive/ship/wiki/Before-you-start)
 
 ### How to use this repo 
 
@@ -22,7 +18,7 @@ sub-directory and then run the helm install script.
     # Clone the SprintHive charts repo
     git clone https://github.com/SprintHive/charts.git
 
-    # So for example to install the elasticearch    
+    # So for example to install the elasticearch chart   
     cd elasticsearch           
     helm install --name esdb --namespace infra .
 
