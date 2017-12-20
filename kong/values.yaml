@@ -5,6 +5,7 @@ ImagePullPolicy: IfNotPresent
 KongDatabase: cassandra
 CassandraContactPoints: kong-cassandra.infra.svc.cluster.local
 CassandraReplFactor: 2
+HostPort: false
 
 ProxyService:
   Type: ClusterIP

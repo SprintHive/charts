@@ -1,5 +1,9 @@
 apiVersion: extensions/v1beta1
+{{- if eq .Values.HostPort true }}
+kind: DaemonSet
+{{- else }}
 kind: Deployment
+{{- end }}
 metadata:
   name: "{{ printf "%s-%s" .Release.Name .Values.Name | trunc 24 }}"
   labels:
@@ -8,7 +12,9 @@ metadata:
     chart: "{{.Chart.Name}}-{{.Chart.Version}}"
     component: {{.Values.Component}}
 spec:
+  {{- if eq .Values.HostPort false }}
   replicas: 1
+  {{- end }}
   template:
     metadata:
       labels:
@@ -65,9 +71,15 @@ spec:
           protocol: TCP
         - name: proxy
           containerPort: 8000
+          {{- if eq .Values.HostPort true }}
+          hostPort: 80
+          {{- end }}
           protocol: TCP
         - name: proxy-ssl
           containerPort: 8443
+          {{- if eq .Values.HostPort true }}
+          hostPort: 443
+          {{- end }}
           protocol: TCP
         - name: surf-tcp
           containerPort: 7946
