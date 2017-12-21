@@ -6,7 +6,7 @@
 Master:
   Name: jenkins-master
   Image: "jenkins/jenkins"
-  ImageTag: "2.91-alpine"
+  ImageTag: "2.97-alpine"
   ImagePullPolicy: "IfNotPresent"
   Component: "jenkins-master"
   UseSecurity: true
