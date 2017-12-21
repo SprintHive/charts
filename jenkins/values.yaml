@@ -40,7 +40,7 @@ Master:
 # List of plugins to be install during Jenkins master start
   InstallPlugins:
       - script-security:1.39
-      - kubernetes:1.1
+      - kubernetes:1.1.2
       - kubernetes-pipeline-devops-steps:1.5
       - workflow-aggregator:2.5
       - workflow-job:2.15
