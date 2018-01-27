@@ -20,6 +20,8 @@ spec:
       labels:
         component: {{.Values.Component}}
     spec:
+      securityContext:
+        runAsUser: 0
       initContainers:
         - name: kong-migrate
           image: {{.Values.Image}}
@@ -42,11 +44,25 @@ spec:
                   apiVersion: v1
                   fieldPath: status.podIP
           command: [ "/bin/sh", "-c", "KONG_CLUSTER_ADVERTISE=$(KONG_HOST_IP):7946 KONG_NGINX_DAEMON='off' kong migrations up" ]
+        - name: prometheus-plugin-setup
+          image: {{.Values.Image}}
+          command: [ "/bin/sh", "-c", "sh /tmp/prometheus-plugin-setup/apply_config.sh" ]
+          volumeMounts:
+            - name: "prometheus-plugin-setup"
+              mountPath: "/tmp/prometheus-plugin-setup"
+            - mountPath: /usr/local/share/kong-extra-plugins
+              name: plugin-extras
       containers:
       - name: {{.Values.Name}}
         image: {{.Values.Image}}
         imagePullPolicy: {{.Values.ImagePullPolicy}}
         env:
+          - name: KONG_LOG_LEVEL
+            value: "debug"
+          - name: KONG_LUA_PACKAGE_PATH
+            value: "/usr/local/share/kong-extra-plugins/?.lua;;"
+          - name: KONG_CUSTOM_PLUGINS
+            value: "prometheus"
           - name: KONG_DATABASE
             value: {{.Values.KongDatabase}}
           - name: KONG_CASSANDRA_CONTACT_POINTS
@@ -98,3 +114,15 @@ spec:
             port: admin
           initialDelaySeconds: 30
           periodSeconds: 10
+        volumeMounts:
+          - mountPath: /tmp/prometheus-plugin-setup
+            name: prometheus-plugin-setup
+            readOnly: false
+          - mountPath: /usr/local/share/kong-extra-plugins
+            name: plugin-extras
+      volumes:
+        - name: prometheus-plugin-setup
+          configMap:
+            name: prometheus-plugin-setup
+        - name: plugin-extras
+          emptyDir: {}
