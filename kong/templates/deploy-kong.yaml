@@ -20,8 +20,6 @@ spec:
       labels:
         component: {{.Values.Component}}
     spec:
-      securityContext:
-        runAsUser: 0
       initContainers:
         - name: kong-migrate
           image: {{.Values.Image}}
@@ -48,17 +46,15 @@ spec:
           image: {{.Values.Image}}
           command: [ "/bin/sh", "-c", "sh /tmp/prometheus-plugin-setup/apply_config.sh" ]
           volumeMounts:
-            - name: "prometheus-plugin-setup"
-              mountPath: "/tmp/prometheus-plugin-setup"
-            - mountPath: /usr/local/share/kong-extra-plugins
-              name: plugin-extras
+            - name: prometheus-plugin-setup
+              mountPath: /tmp/prometheus-plugin-setup
+            - name: plugin-extras
+              mountPath: /usr/local/share/kong-extra-plugins
       containers:
       - name: {{.Values.Name}}
         image: {{.Values.Image}}
         imagePullPolicy: {{.Values.ImagePullPolicy}}
         env:
-          - name: KONG_LOG_LEVEL
-            value: "debug"
           - name: KONG_LUA_PACKAGE_PATH
             value: "/usr/local/share/kong-extra-plugins/?.lua;;"
           - name: KONG_CUSTOM_PLUGINS
@@ -115,11 +111,8 @@ spec:
           initialDelaySeconds: 30
           periodSeconds: 10
         volumeMounts:
-          - mountPath: /tmp/prometheus-plugin-setup
-            name: prometheus-plugin-setup
-            readOnly: false
-          - mountPath: /usr/local/share/kong-extra-plugins
-            name: plugin-extras
+          - name: plugin-extras
+            mountPath: /usr/local/share/kong-extra-plugins
       volumes:
         - name: prometheus-plugin-setup
           configMap:
