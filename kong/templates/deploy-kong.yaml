@@ -44,7 +44,7 @@ spec:
           command: [ "/bin/sh", "-c", "KONG_CLUSTER_ADVERTISE=$(KONG_HOST_IP):7946 KONG_NGINX_DAEMON='off' kong migrations up" ]
         - name: prometheus-plugin-setup
           image: {{.Values.Image}}
-          command: [ "/bin/sh", "-c", "sh /tmp/prometheus-plugin-setup/apply_config.sh" ]
+          command: [ "/bin/sh", "-c", "mkdir -p /usr/local/share/kong-extra-plugins;cp -r /tmp/prometheus-plugin-setup/kong-plugin-prometheus /usr/local/share/kong-extra-plugins/" ]
           volumeMounts:
             - name: prometheus-plugin-setup
               mountPath: /tmp/prometheus-plugin-setup
@@ -62,7 +62,7 @@ spec:
             value: /usr/local/kong/ssl/default/{{.Values.DefaultSSL.SSLKey}}
           {{- end }}
           - name: KONG_LUA_PACKAGE_PATH
-            value: "/usr/local/share/kong-extra-plugins/?.lua;;"
+            value: "/usr/local/share/kong-extra-plugins/kong-plugin-prometheus/?.lua;;"
           - name: KONG_CUSTOM_PLUGINS
             value: "prometheus"
           - name: KONG_DATABASE
@@ -126,8 +126,9 @@ spec:
           {{- end }}
       volumes:
         - name: prometheus-plugin-setup
-          configMap:
-            name: prometheus-plugin-setup
+          gitRepo:
+            repository: https://github.com/nijikokun/kong-plugin-prometheus.git
+            revision: db8726ab567b9bdcd4a3af95b82fabed1a10b896
         - name: plugin-extras
           emptyDir: {}
         {{- if eq .Values.DefaultSSL.Override true }}
