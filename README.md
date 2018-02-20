@@ -17,7 +17,7 @@ sub-directory and then run the helm install script.
     
     # Clone the SprintHive charts repo
     git clone https://github.com/SprintHive/charts.git
-
+      
     # So for example to install the elasticearch chart   
     cd elasticsearch           
     helm install --name esdb --namespace infra .
@@ -42,7 +42,7 @@ This is documented as part of the SHIP guide [read more here](https://github.com
 * [Prometheus](#prometheus)
 * [fluent-bit](#fluent-bit)
 * [zipkin](#zipkin)
-* kong
+* [Kong](#kong)
 * kong-cassandra
 * [MongoDB](#mongodb)
 * [rabbitmq](#rabbitmq)
@@ -125,7 +125,7 @@ This is documented as part of the SHIP guide [read more here](https://github.com
 
     # In nexus sub-directory:
     helm install --name repo --namespace infra .
-
+      
     # To uninstall the chart, do this:
     helm delete --purge repo
       
@@ -142,10 +142,23 @@ This is documented as part of the SHIP guide [read more here](https://github.com
 
     # In the zipkin sub-directory:
     helm install --name tracing --namespace infra .
-    
+      
     # To uninstall the chart, do this:
     helm delete --purge tracing
               
+<a id="kong">
+
+### Install Kong
+
+    # In the kong sub-directory
+    helm install --name inggw --namespace infra .
+        
+    # To uninstall the chart, do this:
+    helm delete --purge inggw
+      
+    # After Kong is installed, activate the prometheus plugin
+    curl -X POST http://<kong-admin service ip>:8001/plugins -d "name=prometheus" 
+
 <a id="prometheus">
 
 ### Install Prometheus 
@@ -167,7 +180,7 @@ This is documented as part of the SHIP guide [read more here](https://github.com
 
     # In fluent-bit sub-directory:
     helm install --name logcollect --namespace infra .
-
+      
     # To uninstall the chart, do this:
     helm delete --purge logcollect
     
@@ -177,7 +190,7 @@ This is documented as part of the SHIP guide [read more here](https://github.com
 
     # In mongodb sub-directory:
     helm install --name mongodb --namespace local .
-
+      
     # Confirm that this is running do a port-forward and connect to mongodb using a mongodb client
     kubectl port-forward -n local <POD-NAME> 27017
     
@@ -207,7 +220,7 @@ will resolve to your minikube network
 
     # In rabbitmq sub-directory:
     helm install --name rabbitmq --namespace local .
-    
+      
     # To uninstall the chart, do this:
     helm delete --purge rabbitmq
     

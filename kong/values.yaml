@@ -8,5 +8,10 @@ CassandraReplFactor: 2
 HostPort: false
 
 ProxyService:
-  Type: ClusterIP
-  HttpEnabled: true
+  Type: NodePort
+  HttpEnabled: false
+
+DefaultSSL:
+  Override: true
+  SSLCert: kong-default.crt
+  SSLKey: kong-default.key
