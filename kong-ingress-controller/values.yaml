@@ -1,4 +1,4 @@
 Component: kong-ingress-controller
 Name: kong-ingress-controller
-Image: quay.io/sprinthive/kong-ingress-controller:v0.0.3
+Image: quay.io/sprinthive/kong-ingress-controller:v0.0.6
 ImagePullPolicy: IfNotPresent
