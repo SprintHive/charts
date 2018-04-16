@@ -12,6 +12,6 @@ ProxyService:
   HttpEnabled: true
 
 DefaultSSL:
-  Override: true
+  Override: false
   SSLCert: kong-default.crt
   SSLKey: kong-default.key
