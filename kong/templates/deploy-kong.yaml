@@ -77,6 +77,8 @@ spec:
             value: "10"
           - name: KONG_CASSANDRA_SCHEMA_CONSENSUS_TIMEOUT
             value: "5000"
+          - name: KONG_ADMIN_LISTEN
+            value: 0.0.0.0:8001
           - name: KONG_HOST_IP
             valueFrom:
               fieldRef:
