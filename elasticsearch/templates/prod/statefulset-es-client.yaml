@@ -10,6 +10,7 @@ metadata:
     component: {{.Values.Component}}
     role: {{.Values.Production.Client.Role}}
 spec:
+  serviceName: "{{.Values.Name }}-{{.Values.Production.Client.Role}}"
   replicas: {{.Values.Production.Client.Replicas }}
   template:
     metadata:

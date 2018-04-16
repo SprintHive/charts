@@ -41,7 +41,6 @@ data:
       ml.enabled: false
       security.enabled: false
       watcher.enabled: true
-      watcher.enabled: false
     {{- end}}
 
     {{- if eq .Values.SearchGuard.Enabled true}}

@@ -7,7 +7,7 @@ Image: quay.io/sprinthive/elasticsearch:0.0.2
 ClusterProfile: local
 ImagePullPolicy: IfNotPresent
 ClusterName: kube-es
-Plugins: ""
+Plugins: "x-pack"
 SearchGuard:
   Enabled: false
   Plugin: com.floragunn:search-guard-5:5.4.1-12
@@ -30,17 +30,17 @@ Production:
     Role: master
     Replicas: 1
     MinimumMasters: 1
-    JavaOpts: "-Xms300m -Xmx300m"
+    JavaOpts: "-Xms600m -Xmx600m"
     CpuRequests: "0.25"
     CpuLimits: "0.25"
-    MemoryRequests: "800Mi"
-    MemoryLimits: "800Mi"
+    MemoryRequests: "1200Mi"
+    MemoryLimits: "1200Mi"
     LivenessTest:
       InitialDelaySecs: 600
       TimeoutSecs: 1
     VolumeClaimTemplate:
       Enabled: true
-      StorageClass: gp2encrypted
+      StorageClass: gp2
       RequestedStorage: 1Gi
 
   Client:
@@ -56,7 +56,7 @@ Production:
       TimeoutSecs: 1
     VolumeClaimTemplate:
       Enabled: false
-      StorageClass: gp2encrypted
+      StorageClass: gp2
       RequestedStorage: 1Gi
 
   Data:
@@ -72,7 +72,7 @@ Production:
       TimeoutSecs: 1
     VolumeClaimTemplate:
       Enabled: true
-      StorageClass: gp2encrypted
+      StorageClass: gp2
       RequestedStorage: 100Gi
 
 ## Local Profile

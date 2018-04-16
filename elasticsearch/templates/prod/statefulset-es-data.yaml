@@ -11,6 +11,7 @@ metadata:
     role: {{.Values.Production.Data.Role}}
 spec:
   replicas: {{.Values.Production.Data.Replicas }}
+  serviceName: "{{.Values.Name }}-{{.Values.Production.Data.Role}}"
   template:
     metadata:
       labels:
