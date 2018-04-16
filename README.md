@@ -28,6 +28,13 @@ Uninstall a chart
     # so for example to uninstall the elasticsearch chart
     helm del --purge esdb                
 
+### Making changes to this repo 
+
+After committing and pushing you need to upload the charts to s3.
+
+    ./package.sh sprinthive-dev-charts
+
+
 ### Preparing minikube
 
 This is documented as part of the SHIP guide [read more here](https://github.com/SprintHive/ship/wiki/Preparing-minikube)
