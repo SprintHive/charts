@@ -19,6 +19,15 @@ spec:
         role: {{.Values.Production.Master.Role}}
     spec:
       serviceAccountName: {{.Values.Component}}
+      initContainers:
+      - name: copy-config
+        image: {{.Values.Image}}
+        command: [ "/bin/sh", "-c", "cp -LR /tmp/configmap/* /tmp/config-dir/" ]
+        volumeMounts:
+          - name: config-dir
+            mountPath: /tmp/config-dir
+          - name: config-configmap
+            mountPath: /tmp/configmap
       containers:
       - name: {{.Values.Name}}-{{.Values.Production.Master.Role}}
         securityContext:
@@ -86,7 +95,7 @@ spec:
         volumeMounts:
         - name: storage
           mountPath: /data
-        - name: configdir
+        - name: config-dir
           mountPath: /elasticsearch/config
       tolerations:
         - key: "type"
@@ -99,7 +108,10 @@ spec:
         emptyDir:
           medium: ""
       {{- end}}
-      - name: configdir
+      - name: config-dir
+        emptyDir:
+          medium: ""
+      - name: config-configmap
         configMap:
           name: es-config
   {{- if eq .Values.Production.Master.VolumeClaimTemplate.Enabled true}}
