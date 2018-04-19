@@ -9,7 +9,8 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
   annotations:
-      kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
+    kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
+    kubernetes.io/tls-acme: 'true'
 spec:
   rules:
   - host: {{ .Values.ingress.host }}
@@ -19,4 +20,8 @@ spec:
         backend:
           serviceName: {{ .Values.Name }}
           servicePort: 80
+  tls:
+    - hosts:
+      - {{ .Values.ingress.host }}
+      secretName: kibana-tls
 {{ end }}
