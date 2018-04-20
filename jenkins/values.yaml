@@ -47,8 +47,6 @@ Master:
       - credentials-binding:1.16
       - git:3.8.0
       - amazon-ecr:1.6
-      - cloudbees-bitbucket-branch-source:2.2.10
-      - bitbucket-oauth:0.6
 # Used to approve a list of groovy functions in pipelines used the script-security plugin. Can be viewed under /scriptApproval
   ScriptApproval:
      - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods invokeMethod java.lang.Object java.lang.String java.lang.Object
