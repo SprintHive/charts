@@ -43,7 +43,6 @@ Master:
       - kubernetes:1.5.2
       - kubernetes-pipeline-devops-steps:1.5
       - workflow-aggregator:2.5
-      - workflow-job:2.19
       - credentials-binding:1.16
       - git:3.8.0
       - amazon-ecr:1.6
@@ -86,9 +85,9 @@ Master:
       kubernetes.io/tls-acme: "true"
 
     TLS:
-      # - secretName: jenkins.cluster.local
-      #   hosts:
-      #     - jenkins.cluster.local
+      - secretName: cicd-jenkins-tls
+        hosts:
+          - jenkins.honeypot.sprinthive.tech
 
 Agent:
   Enabled: true
