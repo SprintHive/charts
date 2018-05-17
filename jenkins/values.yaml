@@ -39,9 +39,10 @@ Master:
 # JMXPort: 4000
 # List of plugins to be install during Jenkins master start
   InstallPlugins:
-      - script-security:1.43
-      - kubernetes:1.5.2
+      - script-security:1.44
+      - kubernetes:1.6.0
       - kubernetes-pipeline-devops-steps:1.5
+      - kubernetes-pipeline-steps:1.5
       - workflow-aggregator:2.5
       - credentials-binding:1.16
       - git:3.8.0
@@ -49,7 +50,7 @@ Master:
       - google-oauth-plugin:0.5
       - google-container-registry-auth:0.3
       - bitbucket:1.1.8
-      - cloudbees-bitbucket-branch-source:2.2.10
+      - cloudbees-bitbucket-branch-source:2.2.11
 # Used to approve a list of groovy functions in pipelines used the script-security plugin. Can be viewed under /scriptApproval
   ScriptApproval:
      - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods invokeMethod java.lang.Object java.lang.String java.lang.Object
