@@ -28,8 +28,8 @@ Production:
 
   Master:
     Role: master
-    Replicas: 1
-    MinimumMasters: 1
+    Replicas: 3
+    MinimumMasters: 2
     JavaOpts: "-Xms600m -Xmx600m"
     CpuRequests: "0.25"
     CpuLimits: "0.25"

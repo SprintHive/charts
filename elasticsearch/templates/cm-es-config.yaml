@@ -33,7 +33,13 @@ data:
     discovery:
       zen:
         ping.unicast.hosts: ${DISCOVERY_SERVICE}
-        minimum_master_nodes: ${NUMBER_OF_MASTERS}
+        {{- if eq .Values.ClusterProfile "production" }}
+        minimum_master_nodes: {{ .Values.Production.Master.MinimumMasters }}
+        {{- else if eq .Values.ClusterProfile "local" }}
+        minimum_master_nodes: {{ .Values.Local.SingleNode.MinimumMasters }}
+        {{- else }}
+        minimum_master_nodes: 1
+        {{- end }}
 
     {{- if eq .Values.Plugins "x-pack"}}
     xpack:
