@@ -1,0 +1,17 @@
+{{- if eq .Values.ClusterProfile "production"}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.Values.TransportService.Name}}
+  labels:
+    component: {{.Values.Component}}
+    role: {{.Values.Production.Data.Role}}
+spec:
+  selector:
+    component: {{.Values.Component}}
+    role: {{.Values.Production.Data.Role}}
+  ports:
+  - name: transport
+    port: 9300
+    protocol: TCP
+{{- end}}

@@ -22,6 +22,14 @@ Service:
 DiscoveryService:
   Name: elasticsearch-discovery
 
+TransportService:
+  Name: elasticsearch-transport
+
+Curator:
+  LogstashCleanupDays: 14
+  IstioCleanupDays: 3
+  Disabled: False
+
 ## Production Profile
 
 Production:
