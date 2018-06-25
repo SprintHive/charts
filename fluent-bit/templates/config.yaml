@@ -15,12 +15,23 @@ data:
     [INPUT]
         Name             tail
         Path             /var/log/containers/*.log
+        Exclude_Path     *istio*
         Parser           docker
-        Tag              kube.*
+        Tag              container_logs.*
         Refresh_Interval 5
         Mem_Buf_Limit    10MB
         Skip_Long_Lines  On
         DB               /var/tmp/fluent-bit.db
+
+    [INPUT]
+        Name             tail
+        Path             /var/log/containers/*istio*.log
+        Parser           docker
+        Tag              istio_container_logs.*
+        Refresh_Interval 5
+        Mem_Buf_Limit    10MB
+        Skip_Long_Lines  On
+        DB               /var/tmp/fluent-bit-istio.db
 
     [INPUT]
         Name          tcp
@@ -29,10 +40,11 @@ data:
         Chunk_Size    32
         Buffer_Size   64
         Mem_Buf_Limit 10MB
+        Tag           app_logs
 
     [FILTER]
         Name   kubernetes
-        Match  kube.*
+        Match  *container_logs.*
 
 {{ if eq .Values.backend.type "test" }}
     [OUTPUT]
@@ -49,10 +61,30 @@ data:
 {{ else if eq .Values.backend.type "es" }}
     [OUTPUT]
         Name  es
-        Match *
+        Match container_logs.*
+        Host  {{ .Values.backend.es.host }}
+        Port  {{ .Values.backend.es.port }}
+        Logstash_Format On
+        Retry_Limit False
+        Time_Key @timestamp
+
+    [OUTPUT]
+        Name  es
+        Match istio_container_logs.*
+        Host  {{ .Values.backend.es.host }}
+        Port  {{ .Values.backend.es.port }}
+        Logstash_Format On
+        Retry_Limit False
+        Time_Key @timestamp
+        Logstash_Prefix istio_logs
+
+    [OUTPUT]
+        Name  es
+        Match app_logs
         Host  {{ .Values.backend.es.host }}
         Port  {{ .Values.backend.es.port }}
         Logstash_Format On
         Retry_Limit False
         Time_Key @fb_timestamp
+        Logstash_Prefix app_logs
 {{- end }}
