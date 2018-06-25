@@ -19,16 +19,46 @@ spec:
     metadata:
       labels:
         component: {{.Values.Component}}
+      {{- if eq .Values.IstioSidecar true }}
+      annotations:
+        sidecar.istio.io/status: '{"version":"8393131458e43b860064939d446c65a93711cdb6059612a6933982fdcafcac51","initContainers":["istio-init"],"containers":["istio-proxy"],"volumes":["istio-envoy","istio-certs"],"imagePullSecrets":null}'
+      {{- end }}
     spec:
       initContainers:
-        - name: prometheus-plugin-setup
-          image: {{.Values.Image}}
-          command: [ "/bin/sh", "-c", "mkdir -p /usr/local/share/kong-extra-plugins;cp -r /tmp/prometheus-plugin-setup/kong-plugin-prometheus /usr/local/share/kong-extra-plugins/" ]
-          volumeMounts:
-            - name: prometheus-plugin-setup
-              mountPath: /tmp/prometheus-plugin-setup
-            - name: plugin-extras
-              mountPath: /usr/local/share/kong-extra-plugins
+      - name: prometheus-plugin-setup
+        image: {{.Values.Image}}
+        command: [ "/bin/sh", "-c", "mkdir -p /usr/local/share/kong-extra-plugins;cp -r /tmp/prometheus-plugin-setup/kong-plugin-prometheus /usr/local/share/kong-extra-plugins/" ]
+        volumeMounts:
+          - name: prometheus-plugin-setup
+            mountPath: /tmp/prometheus-plugin-setup
+          - name: plugin-extras
+            mountPath: /usr/local/share/kong-extra-plugins
+      {{- if eq .Values.IstioSidecar true }}
+      - args:
+        - -p
+        - "15001"
+        - -u
+        - "1337"
+        - -m
+        - REDIRECT
+        - -i
+        - 10.16.0.0/14
+        - -x
+        - ""
+        - -b
+        - 8001, 8000, 8443, 7946, 7946,
+        - -d
+        - ""
+        image: docker.io/istio/proxy_init:0.8.0
+        imagePullPolicy: IfNotPresent
+        name: istio-init
+        resources: {}
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+          privileged: true
+      {{- end }}
       containers:
       - name: {{.Values.Name}}
         image: {{.Values.Image}}
@@ -63,7 +93,7 @@ spec:
               fieldRef:
                 apiVersion: v1
                 fieldPath: status.podIP
-        command: [ "/bin/sh", "-c", "KONG_CLUSTER_ADVERTISE=$(KONG_HOST_IP):7946 KONG_NGINX_DAEMON='off' kong start" ]
+        command: [ "/bin/sh", "-c", "sleep 60; KONG_CLUSTER_ADVERTISE=$(KONG_HOST_IP):7946 KONG_NGINX_DAEMON='off' kong start" ]
         ports:
         - name: admin
           containerPort: 8001
@@ -89,13 +119,13 @@ spec:
         livenessProbe:
           tcpSocket:
             port: 8001
-          initialDelaySeconds: 30
+          initialDelaySeconds: 90
           periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /status
             port: admin
-          initialDelaySeconds: 30
+          initialDelaySeconds: 90
           periodSeconds: 10
         volumeMounts:
           - name: plugin-extras
@@ -105,16 +135,90 @@ spec:
             mountPath: /usr/local/kong/ssl/default/
             readOnly: true
           {{- end }}
+      {{- if eq .Values.IstioSidecar true }}
+      - args:
+        - proxy
+        - sidecar
+        - --configPath
+        - /etc/istio/proxy
+        - --binaryPath
+        - /usr/local/bin/envoy
+        - --serviceCluster
+        - istio-proxy
+        - --drainDuration
+        - 45s
+        - --parentShutdownDuration
+        - 1m0s
+        - --discoveryAddress
+        - istio-pilot.istio-system:15007
+        - --discoveryRefreshDelay
+        - 10s
+        - --zipkinAddress
+        - zipkin.istio-system:9411
+        - --connectTimeout
+        - 10s
+        - --statsdUdpAddress
+        - istio-statsd-prom-bridge.istio-system:9125
+        - --proxyAdminPort
+        - "15000"
+        - --controlPlaneAuthPolicy
+        - NONE
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: INSTANCE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: ISTIO_META_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: ISTIO_META_INTERCEPTION_MODE
+          value: REDIRECT
+        image: docker.io/istio/proxyv2:0.8.0
+        imagePullPolicy: IfNotPresent
+        name: istio-proxy
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        securityContext:
+          privileged: false
+          readOnlyRootFilesystem: true
+          runAsUser: 1337
+        volumeMounts:
+        - mountPath: /etc/istio/proxy
+          name: istio-envoy
+        - mountPath: /etc/certs/
+          name: istio-certs
+          readOnly: true
+      {{- end }}
       volumes:
-        - name: prometheus-plugin-setup
-          gitRepo:
-            repository: https://github.com/nijikokun/kong-plugin-prometheus.git
-            revision: db8726ab567b9bdcd4a3af95b82fabed1a10b896
-        - name: plugin-extras
-          emptyDir: {}
-        {{- if eq .Values.DefaultSSL.Override true }}
-        - name: kong-default-tls
-          secret:
-            defaultMode: 420
-            secretName: kong-default-tls
-        {{- end }}
+      - name: prometheus-plugin-setup
+        gitRepo:
+          repository: https://github.com/nijikokun/kong-plugin-prometheus.git
+          revision: db8726ab567b9bdcd4a3af95b82fabed1a10b896
+      - name: plugin-extras
+        emptyDir: {}
+      {{- if eq .Values.DefaultSSL.Override true }}
+      - name: kong-default-tls
+        secret:
+          defaultMode: 420
+          secretName: kong-default-tls
+      {{- end }}
+      {{- if eq .Values.IstioSidecar true }}
+      - emptyDir:
+          medium: Memory
+        name: istio-envoy
+      - name: istio-certs
+        secret:
+          optional: true
+          secretName: istio.default
+      {{- end }}
