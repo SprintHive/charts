@@ -8,7 +8,7 @@ spec:
   selector:
     app: {{ template "fullname" . }}
   ports:
-  - name: http
+  - name: logsink
     port: 5170
     targetPort: 5170
     protocol: TCP
