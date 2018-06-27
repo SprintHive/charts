@@ -17,5 +17,5 @@ spec:
     targetPort: 8443
     protocol: TCP
   selector:
-    component: {{.Values.Component}}
+    app: {{.Values.Component}}
 {{- end}}
