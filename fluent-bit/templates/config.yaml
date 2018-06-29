@@ -7,24 +7,12 @@ metadata:
 data:
   custom-parsers.conf: |-
     [PARSER]
-        Name         istio_pilot
-        Format       regex
-        Regex        ^(?<time>[^\s]+)\s+(?<level>[^\s]+)\s+(?<message>.*)$
-        Time_Key     time
-        Time_Format %Y-%m-%dT%H:%M:%S.%L%z
-        Time_Keep    On
-
-    [PARSER]
         Name         istio_proxy
         Format       regex
         Regex        ^\[(?<time>[^\]]*)](\[(?<code>[^\]]*)\])?(\[(?<level>[^\]]*)\])?(\[(?<module>[^\]]*)\])?(?<message>.*)$
         Time_Key     time
         Time_Format %Y-%m-%d %H:%M:%S
-
-    [PARSER]
-        Name              unescape_message
-        Format            json
-        Decode_Field_As   escaped    message
+        Time_Format %Y-%m-%dT%H:%M:%S.%L%z
 
     [PARSER]
         Name         docker_utf8
@@ -46,7 +34,7 @@ data:
         Path             /var/log/containers/*.log
         Exclude_Path     *istio*
         Parser           docker
-        Tag              container_logs.*
+        Tag              container_logs_text.*
         Refresh_Interval 5
         Mem_Buf_Limit    10MB
         Skip_Long_Lines  On
@@ -55,7 +43,7 @@ data:
     [INPUT]
         Name             tail
         Path             /var/log/containers/*istio-proxy*.log
-        Tag              istio_proxy_container_logs.*
+        Tag              istio_proxy_container_logs_text.*
         Parser           docker_utf8
         Refresh_Interval 5
         Mem_Buf_Limit    10MB
@@ -65,12 +53,22 @@ data:
     [INPUT]
         Name             tail
         Path             /var/log/containers/*istio-pilot*discovery*.log
-        Tag              istio_pilot_container_logs.*
+        Tag              istio_generic_container_logs_json.*
         Parser           docker_utf8
         Refresh_Interval 5
         Mem_Buf_Limit    10MB
         Skip_Long_Lines  On
-        DB               /var/tmp/fluent-bit-istio-pilot.db
+        DB               /var/tmp/fluent-bit-istio-generic.db
+
+    [INPUT]
+        Name             tail
+        Path             /var/log/containers/*istio*mixer*.log
+        Tag              istio_generic_container_logs_json.*
+        Parser           docker_utf8
+        Refresh_Interval 5
+        Mem_Buf_Limit    10MB
+        Skip_Long_Lines  On
+        DB               /var/tmp/fluent-bit-istio-generic.db
 
     [INPUT]
         Name          tcp
@@ -83,23 +81,24 @@ data:
 
     [FILTER]
         Name   kubernetes
-        Match  *container_logs.*
+        Match  *container_logs_text*
 
     [FILTER]
-        Name   parser
-        Match  istio_proxy_container_logs.*
-        Key_Name log
-        Parser istio_proxy
-        Decode_Field message
+        Name      kubernetes
+        Match     *container_logs_json*
+        Merge_Log On
+
+    [FILTER]
+        Name         parser
+        Match        istio_proxy_container_logs_text.*
+        Key_Name     log
+        Parser       istio_proxy
         Reserve_Data True
 
     [FILTER]
-        Name   parser
-        Match  istio_pilot_container_logs.*
-        Key_Name log
-        Parser istio_pilot
-        Decode_Field message
-        Reserve_Data True
+        Name   modify
+        Match  istio_generic_container_logs_json.*
+        Rename msg message
 
 {{ if eq .Values.backend.type "test" }}
     [OUTPUT]
@@ -108,38 +107,38 @@ data:
         Path /tmp/fluent-bit.log
 {{ else if eq .Values.backend.type "forward" }}
     [OUTPUT]
-        Name          forward
-        Match         *
-        Host          {{ .Values.backend.forward.host }}
-        Port          {{ .Values.backend.forward.port }}
-        Retry_Limit False
+        Name            forward
+        Match           *
+        Host            {{ .Values.backend.forward.host }}
+        Port            {{ .Values.backend.forward.port }}
+        Retry_Limit     False
 {{ else if eq .Values.backend.type "es" }}
     [OUTPUT]
-        Name  es
-        Match container_logs.*
-        Host  {{ .Values.backend.es.host }}
-        Port  {{ .Values.backend.es.port }}
+        Name            es
+        Match           container_logs_text.*
+        Host            {{ .Values.backend.es.host }}
+        Port            {{ .Values.backend.es.port }}
         Logstash_Format On
-        Retry_Limit False
-        Time_Key @timestamp
+        Retry_Limit     False
+        Time_Key        @timestamp
 
     [OUTPUT]
-        Name  es
-        Match istio*_container_logs.*
-        Host  {{ .Values.backend.es.host }}
-        Port  {{ .Values.backend.es.port }}
+        Name            es
+        Match           *istio*
+        Host            {{ .Values.backend.es.host }}
+        Port            {{ .Values.backend.es.port }}
         Logstash_Format On
-        Retry_Limit False
-        Time_Key @timestamp
+        Retry_Limit     False
+        Time_Key        @timestamp
         Logstash_Prefix istio_logs
 
     [OUTPUT]
-        Name  es
-        Match app_logs
-        Host  {{ .Values.backend.es.host }}
-        Port  {{ .Values.backend.es.port }}
+        Name            es
+        Match           app_logs
+        Host            {{ .Values.backend.es.host }}
+        Port            {{ .Values.backend.es.port }}
         Logstash_Format On
-        Retry_Limit False
-        Time_Key @fb_timestamp
+        Retry_Limit     False
+        Time_Key        @fb_timestamp
         Logstash_Prefix app_logs
 {{- end }}
