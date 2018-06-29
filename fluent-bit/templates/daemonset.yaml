@@ -36,6 +36,9 @@ spec:
         - name: config
           mountPath: /fluent-bit/etc/fluent-bit.conf
           subPath: fluent-bit.conf
+        - name: config
+          mountPath: /fluent-bit/etc/custom-parsers.conf
+          subPath: custom-parsers.conf
 {{ if .Values.on_minikube }}
         - name: mnt
           mountPath: /mnt

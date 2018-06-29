@@ -5,12 +5,41 @@ metadata:
   labels:
     app: {{ template "fullname" . }}
 data:
+  custom-parsers.conf: |-
+    [PARSER]
+        Name         istio_pilot
+        Format       regex
+        Regex        ^(?<time>[^\s]+)\s+(?<level>[^\s]+)\s+(?<message>.*)$
+        Time_Key     time
+        Time_Format %Y-%m-%dT%H:%M:%S.%L%z
+        Time_Keep    On
+
+    [PARSER]
+        Name         istio_proxy
+        Format       regex
+        Regex        ^\[(?<time>[^\]]*)](\[(?<code>[^\]]*)\])?(\[(?<level>[^\]]*)\])?(\[(?<module>[^\]]*)\])?(?<message>.*)$
+        Time_Key     time
+        Time_Format %Y-%m-%d %H:%M:%S
+
+    [PARSER]
+        Name              unescape_message
+        Format            json
+        Decode_Field_As   escaped    message
+
+    [PARSER]
+        Name         docker_utf8
+        Format       json
+        Time_Key     time
+        Time_Format  %Y-%m-%dT%H:%M:%S.%L
+        Decode_Field_As   escaped_utf8    log
+
   fluent-bit.conf: |-
     [SERVICE]
         Flush        1
         Daemon       Off
         Log_Level    info
         Parsers_File parsers.conf
+        Parsers_File custom-parsers.conf
 
     [INPUT]
         Name             tail
@@ -25,13 +54,23 @@ data:
 
     [INPUT]
         Name             tail
-        Path             /var/log/containers/*istio*.log
-        Parser           docker
-        Tag              istio_container_logs.*
+        Path             /var/log/containers/*istio-proxy*.log
+        Tag              istio_proxy_container_logs.*
+        Parser           docker_utf8
         Refresh_Interval 5
         Mem_Buf_Limit    10MB
         Skip_Long_Lines  On
-        DB               /var/tmp/fluent-bit-istio.db
+        DB               /var/tmp/fluent-bit-istio-proxy.db
+
+    [INPUT]
+        Name             tail
+        Path             /var/log/containers/*istio-pilot*discovery*.log
+        Tag              istio_pilot_container_logs.*
+        Parser           docker_utf8
+        Refresh_Interval 5
+        Mem_Buf_Limit    10MB
+        Skip_Long_Lines  On
+        DB               /var/tmp/fluent-bit-istio-pilot.db
 
     [INPUT]
         Name          tcp
@@ -45,6 +84,22 @@ data:
     [FILTER]
         Name   kubernetes
         Match  *container_logs.*
+
+    [FILTER]
+        Name   parser
+        Match  istio_proxy_container_logs.*
+        Key_Name log
+        Parser istio_proxy
+        Decode_Field message
+        Reserve_Data True
+
+    [FILTER]
+        Name   parser
+        Match  istio_pilot_container_logs.*
+        Key_Name log
+        Parser istio_pilot
+        Decode_Field message
+        Reserve_Data True
 
 {{ if eq .Values.backend.type "test" }}
     [OUTPUT]
@@ -70,7 +125,7 @@ data:
 
     [OUTPUT]
         Name  es
-        Match istio_container_logs.*
+        Match istio*_container_logs.*
         Host  {{ .Values.backend.es.host }}
         Port  {{ .Values.backend.es.port }}
         Logstash_Format On
