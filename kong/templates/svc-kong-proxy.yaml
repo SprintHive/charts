@@ -1,21 +1,22 @@
-{{- if eq .Values.HostPort false }}
 apiVersion: v1
 kind: Service
 metadata:
   name: kong-proxy
 spec:
   type: {{.Values.ProxyService.Type}}
+  {{- if and (eq .Values.ProxyService.Type "LoadBalancer") .Values.ProxyService.LoadBalancerIP }}
+  loadBalancerIP: {{ .Values.ProxyService.LoadBalancerIP }}
+  {{- end}}
   ports:
   {{- if eq .Values.ProxyService.HttpEnabled true}}
-  - name: kong-proxy-http
+  - name: http
     port: 80
-    targetPort: 8000
+    targetPort: 8080
     protocol: TCP
   {{- end}}
-  - name: kong-proxy-https
+  - name: https
     port: 443
     targetPort: 8443
     protocol: TCP
   selector:
     app: {{.Values.Component}}
-{{- end}}

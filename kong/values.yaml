@@ -6,10 +6,15 @@ KongDatabase: cassandra
 CassandraContactPoints: kong-cassandra.infra.svc.cluster.local
 CassandraReplFactor: 2
 HostPort: false
-IstioSidecar: false
+IstioSidecar:
+  enabled: false
+  hub: gcr.io/istio-release
+  tag: release-1.0-latest-daily
+
+Replicas: 3
 
 ProxyService:
-  Type: NodePort
+  Type: LoadBalancer
   HttpEnabled: true
 
 DefaultSSL:

@@ -13,18 +13,14 @@ metadata:
     app: {{.Values.Component}}
 spec:
   {{- if eq .Values.HostPort false }}
-  replicas: 1
+  replicas: {{ .Values.Replicas }}
   {{- end }}
   template:
     metadata:
       labels:
-        app: {{.Values.Component}}
-      {{- if eq .Values.IstioSidecar true }}
-      annotations:
-        sidecar.istio.io/status: '{"version":"c3a47039bf1299722cd788931e7474b29004f18a1eaf49db22ed1c58c818d46c","initContainers":["istio-init"],"containers":["istio-proxy"],"volumes":["istio-envoy","istio-certs"],"imagePullSecrets":null}'
-      {{- end }}
+        app: {{ .Values.Component }}
     spec:
-      {{- if eq .Values.IstioSidecar true }}
+      {{- if eq .Values.IstioSidecar.enabled true }}
       initContainers:
       - args:
         - -p
@@ -37,11 +33,9 @@ spec:
         - 10.16.0.0/14
         - -x
         - ""
-        - -b
-        - 8001, 8000, 8443, 7946, 7946,
         - -d
         - ""
-        image: docker.io/istio/proxy_init:0.8.0
+        image: {{ .Values.IstioSidecar.hub }}/proxy_init:{{ .Values.IstioSidecar.tag }}
         imagePullPolicy: IfNotPresent
         name: istio-init
         resources: {}
@@ -84,6 +78,8 @@ spec:
             value: "5000"
           - name: KONG_ADMIN_LISTEN
             value: 0.0.0.0:8001
+          - name: KONG_PROXY_LISTEN
+            value: "0.0.0.0:8080, 0.0.0.0:8443 ssl"
           - name: KONG_HOST_IP
             valueFrom:
               fieldRef:
@@ -94,7 +90,7 @@ spec:
           containerPort: 8001
           protocol: TCP
         - name: proxy
-          containerPort: 8000
+          containerPort: 8080
           {{- if eq .Values.HostPort true }}
           hostPort: 80
           {{- end }}
@@ -127,7 +123,7 @@ spec:
             mountPath: /usr/local/kong/ssl/default/
             readOnly: true
           {{- end }}
-      {{- if eq .Values.IstioSidecar true }}
+      {{- if eq .Values.IstioSidecar.enabled true }}
       - args:
         - proxy
         - sidecar
@@ -174,7 +170,7 @@ spec:
               fieldPath: metadata.name
         - name: ISTIO_META_INTERCEPTION_MODE
           value: REDIRECT
-        image: quay.io/sprinthive/proxyv2:e80a6e4058543eed75a5f4b093f87e105cfde038
+        image: {{ .Values.IstioSidecar.hub }}/proxyv2:{{ .Values.IstioSidecar.tag }}
         imagePullPolicy: IfNotPresent
         name: istio-proxy
         resources:
@@ -199,7 +195,7 @@ spec:
           defaultMode: 420
           secretName: kong-default-tls
       {{- end }}
-      {{- if eq .Values.IstioSidecar true }}
+      {{- if eq .Values.IstioSidecar.enabled true }}
       - emptyDir:
           medium: Memory
         name: istio-envoy
