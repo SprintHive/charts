@@ -19,6 +19,7 @@ spec:
         role: {{.Values.Local.SingleNode.Role}}
     spec:
       serviceAccountName: {{.Values.Component}}
+{{ include "init_containers" . | indent 6 }}
       containers:
       - name: {{.Values.Name}}-{{.Values.Local.SingleNode.Role}}
         securityContext:
@@ -84,7 +85,7 @@ spec:
         volumeMounts:
         - name: storage
           mountPath: /data
-        - name: configdir
+        - name: config-dir
           mountPath: /elasticsearch/config
       tolerations:
         - key: "type"
@@ -97,7 +98,10 @@ spec:
         emptyDir:
           medium: ""
       {{- end}}
-      - name: configdir
+      - name: config-dir
+        emptyDir:
+          medium: ""
+      - name: config-configmap
         configMap:
           name: es-config
   {{- if eq .Values.Local.SingleNode.VolumeClaimTemplate.Enabled true}}

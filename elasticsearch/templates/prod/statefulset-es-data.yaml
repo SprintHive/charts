@@ -19,15 +19,7 @@ spec:
         role: {{.Values.Production.Data.Role}}
     spec:
       serviceAccountName: {{.Values.Component}}
-      initContainers:
-      - name: copy-config
-        image: {{.Values.Image}}
-        command: [ "/bin/sh", "-c", "cp -LR /tmp/configmap/* /tmp/config-dir/" ]
-        volumeMounts:
-          - name: config-dir
-            mountPath: /tmp/config-dir
-          - name: config-configmap
-            mountPath: /tmp/configmap
+{{ include "init_containers" . | indent 6 }}
       containers:
       - name: {{.Values.Name}}-{{.Values.Production.Data.Role}}
         securityContext:

@@ -1,4 +1,4 @@
-{{- if not eq .Values.Curator.Disabled }}
+{{- if not .Values.Curator.Disabled }}
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
