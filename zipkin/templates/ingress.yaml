@@ -18,8 +18,8 @@ spec:
       paths:
       - path: {{ .Values.ingress.path }}
         backend:
-          serviceName: zipkin-ui
-          servicePort: {{ .Values.ui.queryPort }}
+          serviceName: {{ .Values.ingress.serviceName }}
+          servicePort: {{ .Values.ingress.servicePort }}
   tls:
     - hosts:
       - {{ .Values.ingress.host }}

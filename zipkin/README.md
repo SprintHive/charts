@@ -40,3 +40,32 @@ configmap:
 4. Commit the changes
 5. Make a new release on github
 6. `git commit -m 'rebuild pages' --allow-empty && git push`
+
+## Gotchas
+
+#### collectors and ui readiness probe doesn't pass
+
+##### Problem
+
+My collector and ui pods are never coming into service as the readiness probes are not passing.
+
+e.g.
+```
+foiled-labradoodle-zipkin-cassandra-0                           1/1       Running                      0          8m
+foiled-labradoodle-zipkin-collector-6dff48b6df-crl4z            0/1       Running                      0          3m
+foiled-labradoodle-zipkin-collector-6dff48b6df-m4v8t            0/1       Running                      0          3m
+foiled-labradoodle-zipkin-collector-6dff48b6df-rrwdb            0/1       Running                      0          3m
+foiled-labradoodle-zipkin-ui-7bdf9c6c96-jh7vq                   0/1       Running                      0          3m
+```
+
+##### Explanation
+
+This can happen for some reason when cassandra comes up before any of the collectors/ui pods.
+
+##### Solution
+Try restarting the pods:
+
+```
+kubectl delete po -l app=zipkin-collector
+kubectl delete po -l app=zipkin-ui
+```

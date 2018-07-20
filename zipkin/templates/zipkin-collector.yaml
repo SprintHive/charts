@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: zipkin-collector
+  name: {{ .Release.Name }}-zipkin-collector
   labels:
     app: zipkin-collector
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
@@ -11,7 +11,8 @@ spec:
   replicas: {{ .Values.collector.replicaCount }}
   strategy:
     rollingUpdate:
-      maxUnavailable: 2
+      maxUnavailable: 0
+      maxSurge: {{ .Values.collector.replicaCount }}
   template:
     metadata:
       labels:
@@ -35,10 +36,10 @@ spec:
           resources:
             limits:
               cpu: "{{ .Values.collector.resources.cpuLimit }}"
-              memory: "{{ .Values.collector.resources.ramMb }}Mi" # TODO fix this, this field id mi but the value is mb. There will be slight wastage
+              memory: "{{ .Values.collector.resources.ramMb }}Mi"
             requests:
               cpu: "{{ .Values.collector.resources.cpuRequest }}"
-              memory: "{{ .Values.collector.resources.ramMb }}Mi" # TODO fix this, this field id mi but the value is mb. There will be slight wastage
+              memory: "{{ .Values.collector.resources.ramMb }}Mi"
           env:
             - name: POD_NAMESPACE
               valueFrom:
@@ -55,7 +56,7 @@ spec:
               value: "false"
             - name: STORAGE_TYPE
               value: "{{ .Values.storageMethod }}"
-{{if eq .Values.storageMethod "cassandra"}}
+{{if eq .Values.storageMethod "cassandra3"}}
             - name: CASSANDRA_USERNAME
               valueFrom:
                 configMapKeyRef:
