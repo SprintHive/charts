@@ -31,10 +31,10 @@ local:
 
   resources:
     requests:
-      memory: 0.5Gi
+      memory: 0.7Gi
       cpu: 0.3
     limits:
-      memory: 0.5Gi
+      memory: 0.7Gi
       cpu: 0.5
 
   config:
@@ -52,7 +52,7 @@ production:
     enabled: true
     ## If defined, volume.beta.kubernetes.io/storage-class: <storageClass>
     ## Default: volume.alpha.kubernetes.io/storage-class: default
-    #  storageClass: generic
+    storageClass: standard
     accessMode: ReadWriteOnce
     size: 1Gi
 
@@ -64,10 +64,9 @@ production:
   resources:
     requests:
       memory: 1.5Gi
-      cpu: 600m
+      cpu: 100m
     limits:
       memory: 1.5Gi
-      cpu: 1000m
 
   ## Change cassandra configuration paramaters below:
   ## ref: http://docs.datastax.com/en/cassandra/3.0/cassandra/configuration/configCassandra_yaml.html
