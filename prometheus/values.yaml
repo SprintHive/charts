@@ -157,7 +157,7 @@ alertmanager:
   ## alertmanager resource requests and limits
   ## Ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ##
-  resources: {}
+  resources:
     limits:
       cpu: 10m
       memory: 32Mi
@@ -286,13 +286,13 @@ kubeStateMetrics:
   ## kube-state-metrics resource requests and limits
   ## Ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ##
-  resources: {}
+  resources:
     limits:
-      cpu: 10m
-      memory: 16Mi
+      cpu: 100m
+      memory: 256Mi
     requests:
       cpu: 10m
-      memory: 16Mi
+      memory: 256Mi
 
   service:
     annotations:
@@ -371,7 +371,7 @@ nodeExporter:
   ## node-exporter resource limits & requests
   ## Ref: https://kubernetes.io/docs/user-guide/compute-resources/
   ##
-  resources: {}
+  resources:
     limits:
       cpu: 200m
       memory: 50Mi
@@ -411,7 +411,7 @@ server:
   ##
   image:
     repository: prom/prometheus
-    tag: v2.2.1
+    tag: v2.3.1
     pullPolicy: IfNotPresent
 
   ## The URL prefix at which the container can be accessed. Useful in the case the '-web.external-url' includes a slug
@@ -553,13 +553,11 @@ server:
   ## Prometheus server resource requests and limits
   ## Ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ##
-  resources: {}
+  resources:
     limits:
       cpu: 500m
-      memory: 512Mi
     requests:
       cpu: 500m
-      memory: 512Mi
 
   service:
     annotations: {}
@@ -653,7 +651,7 @@ pushgateway:
   ## pushgateway resource requests and limits
   ## Ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ##
-  resources: {}
+  resources:
     limits:
       cpu: 10m
       memory: 32Mi
