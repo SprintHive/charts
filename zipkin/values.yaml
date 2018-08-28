@@ -58,7 +58,7 @@ storageMethod: elasticsearch
 
 elasticsearch:
   hosts: elasticsearch.infra:9200
-  dataHosts: elasticsearch-data.infra:9200
+  dataHosts: elasticsearch.infra:9200
 
 cassandra:
   username: zipkin
