@@ -39,7 +39,7 @@ Master:
 # JMXPort: 4000
 # List of plugins to be install during Jenkins master start
   InstallPlugins:
-      - script-security:1.44
+      - script-security:1.46
       - kubernetes:1.12.3
       - kubernetes-pipeline-devops-steps:1.5
       - kubernetes-pipeline-steps:1.5
