@@ -2,9 +2,8 @@ Component: kong
 Name: kong
 Image: kong:0.13.0
 ImagePullPolicy: IfNotPresent
-KongDatabase: cassandra
-CassandraContactPoints: kong-cassandra.infra.svc.cluster.local
-CassandraReplFactor: 2
+KongDatabase: postgres
+PostgresHost: kong-postgres
 HostPort: false
 IstioSidecar:
   enabled: false

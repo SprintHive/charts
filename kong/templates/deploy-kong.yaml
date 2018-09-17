@@ -52,9 +52,9 @@ spec:
         env:
           {{- if eq .Values.DefaultSSL.Override true }}
           - name: KONG_SSL_CERT
-            value: /usr/local/kong/ssl/default/{{.Values.DefaultSSL.SSLCert}}
+            value: "/usr/local/kong/ssl/default/{{ .Values.DefaultSSL.SSLCert }}"
           - name: KONG_SSL_CERT_KEY
-            value: /usr/local/kong/ssl/default/{{.Values.DefaultSSL.SSLKey}}
+            value: "/usr/local/kong/ssl/default/{{ .Values.DefaultSSL.SSLKey }}"
           {{- end }}
           - name: KONG_PROXY_ACCESS_LOG
             value: /dev/stdout
@@ -66,16 +66,17 @@ spec:
             value: /dev/stderr
           - name: KONG_DATABASE
             value: {{.Values.KongDatabase}}
-          - name: KONG_CASSANDRA_CONTACT_POINTS
-            value: {{.Values.CassandraContactPoints}}
-          - name: KONG_CASSANDRA_KEYSPACE
-            value: "{{ printf "%s_%s" .Release.Name .Values.Name | trunc 24 }}"
-          - name: KONG_CASSANDRA_REPL_FACTOR
-            value: "{{.Values.CassandraReplFactor}}"
-          - name: KONG_DB_UPDATE_PROPAGATION
-            value: "10"
-          - name: KONG_CASSANDRA_SCHEMA_CONSENSUS_TIMEOUT
-            value: "5000"
+          - name: KONG_PG_HOST
+            value: {{.Values.PostgresHost}}
+          - name: KONG_PG_DATABASE
+            value: kong
+          - name: KONG_PG_USER
+            value: kong
+          - name: KONG_PG_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: kong-postgres
+                key: postgres-password
           - name: KONG_ADMIN_LISTEN
             value: 0.0.0.0:8001
           - name: KONG_PROXY_LISTEN
@@ -119,6 +120,7 @@ spec:
           initialDelaySeconds: 90
           periodSeconds: 10
           {{- if eq .Values.DefaultSSL.Override true }}
+        volumeMounts:
           - name: kong-default-tls
             mountPath: /usr/local/kong/ssl/default/
             readOnly: true
