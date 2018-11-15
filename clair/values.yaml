@@ -1,0 +1,7 @@
+image:
+  repository: quay.io/coreos/clair
+  tag: v2.0.6
+
+config:
+  persistence:
+    size: 5Gi
