@@ -5,3 +5,11 @@ image:
 config:
   persistence:
     size: 5Gi
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 1500Mi
+  requests:
+    cpu: 100m
+    memory: 1500Mi
