@@ -2,14 +2,12 @@ image:
   repository: quay.io/coreos/clair
   tag: v2.0.6
 
-config:
-  persistence:
-    size: 5Gi
-
 resources:
   limits:
     cpu: 200m
     memory: 1500Mi
+    ephemeral-storage: 3Gi
   requests:
     cpu: 100m
     memory: 1500Mi
+    ephemeral-storage: 3Gi
