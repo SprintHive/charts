@@ -80,7 +80,7 @@ spec:
           - name: KONG_ADMIN_LISTEN
             value: 0.0.0.0:8001
           - name: KONG_PROXY_LISTEN
-            value: "0.0.0.0:8080, 0.0.0.0:8443 ssl"
+            value: "0.0.0.0:80, 0.0.0.0:443 ssl"
           - name: KONG_HOST_IP
             valueFrom:
               fieldRef:
@@ -91,13 +91,13 @@ spec:
           containerPort: 8001
           protocol: TCP
         - name: proxy
-          containerPort: 8080
+          containerPort: 80
           {{- if eq .Values.HostPort true }}
           hostPort: 80
           {{- end }}
           protocol: TCP
         - name: proxy-ssl
-          containerPort: 8443
+          containerPort: 443
           {{- if eq .Values.HostPort true }}
           hostPort: 443
           {{- end }}
