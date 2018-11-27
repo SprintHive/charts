@@ -55,6 +55,22 @@ spec:
 {{if eq .Values.storageMethod "elasticsearch"}}
             - name: ES_HOSTS
               value: "{{ .Values.elasticsearch.dataHosts}}"
+{{- if .Values.elasticsearch.nodesWanOnly }}
+            - name: ES_NODES_WAN_ONLY
+              value: "true"
+{{- end }}
+{{- if .Values.elasticsearch.authEnabled }}
+            - name: ES_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.elasticsearch.secretName }}
+                  key: {{ .Values.elasticsearch.usernameKey }}
+            - name: ES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.elasticsearch.secretName }}
+                  key: {{ .Values.elasticsearch.passwordKey }}
+{{- end }}
 {{ end }}
             - name: JAVA_OPTS
               value: "-XX:ConcGCThreads={{ .Values.node.cpus }} -XX:ParallelGCThreads={{ .Values.node.cpus }} -Djava.util.concurrent.ForkJoinPool.common.parallelism={{ .Values.node.cpus }} -Xms{{ .Values.dependencies.resources.javaOptsHeap }}M -Xmx{{ .Values.dependencies.resources.javaOptsHeap }}M -XX:+UseG1GC -server"

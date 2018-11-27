@@ -80,4 +80,16 @@ spec:
 {{if eq .Values.storageMethod "elasticsearch"}}
             - name: ES_HOSTS
               value: "{{ .Values.elasticsearch.hosts}}"
+{{- if .Values.elasticsearch.authEnabled }}
+            - name: ES_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.elasticsearch.secretName }}
+                  key: {{ .Values.elasticsearch.usernameKey }}
+            - name: ES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.elasticsearch.secretName }}
+                  key: {{ .Values.elasticsearch.passwordKey }}
+{{- end }}
 {{ end }}
