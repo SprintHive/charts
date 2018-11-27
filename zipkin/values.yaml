@@ -57,13 +57,13 @@ ingress:
 storageMethod: elasticsearch
 
 elasticsearch:
-  hosts: https://700c192b63b54e6bb4f4a2f9afc0f358.europe-west1.gcp.cloud.es.io:9243
-  dataHosts: https://700c192b63b54e6bb4f4a2f9afc0f358.europe-west1.gcp.cloud.es.io:9243
-  authEnabled: true
-  secretName: es-credentials
-  usernameKey: username
-  passwordKey: password
-  nodesWanOnly: true
+  hosts: elasticsearch.infra:9200
+  dataHosts: elasticsearch.infra:9200
+#  authEnabled: true
+#  secretName: es-credentials
+#  usernameKey: username
+#  passwordKey: password
+#  nodesWanOnly: true     # Set to true for remote ES
 
 cassandra:
   username: zipkin
