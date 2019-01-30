@@ -5,6 +5,13 @@
 
 Master:
   ServiceType: ClusterIP
+  Image: jenkins/jenkins
+  ImageTag: 2.150-alpine
+  resources:
+    requests:
+      memory: "1Gi"
+    limits:
+      memory: "1Gi"
   InstallPlugins:
       - kubernetes:1.12.6
       - kubernetes-pipeline-devops-steps:1.5
@@ -19,9 +26,11 @@ Master:
       - cloudbees-bitbucket-branch-source:2.2.12
       - slack:2.3
       - global-slack-notifier:1.3
+      - Parameterized-Remote-Trigger:3.0.6
 # Used to approve a list of groovy functions in pipelines used the script-security plugin. Can be viewed under /scriptApproval
   ScriptApproval:
      - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods invokeMethod java.lang.Object java.lang.String java.lang.Object
+     - method java.lang.String getBytes
 
   #   - "method groovy.json.JsonSlurperClassic parseText java.lang.String"
   #   - "new groovy.json.JsonSlurperClassic"
@@ -42,6 +51,9 @@ Master:
   Ingress:
     Annotations:
       kubernetes.io/ingress.class: kong
+
+Agent:
+  ImageTag: alpine
 
 Persistence:
   Size: 5Gi
