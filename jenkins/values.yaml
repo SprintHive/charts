@@ -31,6 +31,8 @@ Master:
   ScriptApproval:
      - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods invokeMethod java.lang.Object java.lang.String java.lang.Object
      - method java.lang.String getBytes
+     - staticMethod org.codehaus.groovy.runtime.EncodingGroovyMethods encodeBase64 byte[]
+     - staticMethod org.codehaus.groovy.runtime.EncodingGroovyMethods decodeBase64 java.lang.String
 
   #   - "method groovy.json.JsonSlurperClassic parseText java.lang.String"
   #   - "new groovy.json.JsonSlurperClassic"
