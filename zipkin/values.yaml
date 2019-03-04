@@ -59,6 +59,11 @@ storageMethod: elasticsearch
 elasticsearch:
   hosts: elasticsearch.infra:9200
   dataHosts: elasticsearch.infra:9200
+#  authEnabled: true
+#  secretName: es-credentials
+#  usernameKey: username
+#  passwordKey: password
+#  nodesWanOnly: true     # Set to true for remote ES
 
 cassandra:
   username: zipkin

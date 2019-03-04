@@ -11,12 +11,12 @@ spec:
   {{- if eq .Values.ProxyService.HttpEnabled true}}
   - name: http
     port: 80
-    targetPort: 8080
+    targetPort: 80
     protocol: TCP
   {{- end}}
   - name: https
     port: 443
-    targetPort: 8443
+    targetPort: 443
     protocol: TCP
   selector:
     app: {{.Values.Component}}
