@@ -35,13 +35,13 @@ prometheus-operator:
         requests:
           cpu: 500m
           memory: 3Gi
-        storageSpec:
-          volumeClaimTemplate:
-            spec:
-              accessModes: ["ReadWriteOnce"]
-              resources:
-                requests:
-                  storage: 50Gi
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            accessModes: ["ReadWriteOnce"]
+            resources:
+              requests:
+                storage: 400Gi
   alertmanager:
     config:
       receivers:
