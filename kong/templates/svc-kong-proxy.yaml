@@ -7,6 +7,9 @@ spec:
   {{- if and (eq .Values.ProxyService.Type "LoadBalancer") .Values.ProxyService.LoadBalancerIP }}
   loadBalancerIP: {{ .Values.ProxyService.LoadBalancerIP }}
   {{- end}}
+  {{- if eq .Values.ProxyService.Type "LoadBalancer" }}
+  externalTrafficPolicy: Local
+  {{- end}}
   ports:
   {{- if eq .Values.ProxyService.HttpEnabled true}}
   - name: http

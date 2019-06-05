@@ -27,6 +27,7 @@ TransportService:
 
 Curator:
   LogstashCleanupDays: 14
+  AppLogsCleanupDays: 14
   IstioCleanupDays: 3
   Disabled: False
 

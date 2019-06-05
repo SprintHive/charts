@@ -13,6 +13,11 @@ backend:
   es:
     host: elasticsearch
     port: 9200
+    tls: false
+    auth:
+      enabled: false
+      user: user
+      password: password
 
 env: []
 

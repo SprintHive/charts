@@ -14,6 +14,12 @@ spec:
       maxUnavailable: 2
   template:
     metadata:
+      {{ if .Values.ui.samlProxy }}
+      annotations:
+        "saml-proxy-injector.sprinthive.com/inject": "true"
+        "saml-proxy-injector.sprinthive.com/appPort": "{{ .Values.ui.queryPort }}"
+        "saml-proxy-injector.sprinthive.com/secretName": "zipkin-saml-proxy"
+      {{- end}}
       labels:
         app: zipkin-ui
         release: {{ .Release.Name }}

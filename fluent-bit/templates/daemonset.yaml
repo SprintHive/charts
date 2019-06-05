@@ -56,8 +56,8 @@ spec:
         hostPath:
           path: /var/tmp
       - name: config
-        configMap:
-          name: {{ template "fullname" . }}-config
+        secret:
+          secretName: {{ template "fullname" . }}-config
 {{ if .Values.on_minikube }}
       - name: mnt
         hostPath:

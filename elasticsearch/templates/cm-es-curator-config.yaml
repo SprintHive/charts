@@ -14,7 +14,7 @@ data:
     actions:
       1:
         action: delete_indices
-        description: "Clean up old logstach indices"
+        description: "Clean up old logstash indices"
         options:
           timeout_override:
           continue_if_exception: False
@@ -35,6 +35,28 @@ data:
           kind: prefix
           value: logstash-
       2:
+        action: delete_indices
+        description: "Clean up old app_log indices"
+        options:
+          timeout_override:
+          continue_if_exception: False
+          disable_action: {{.Values.Curator.Disabled}}
+          ignore_empty_list: True
+        filters:
+        - filtertype: age
+          source: name
+          direction: older
+          timestring: '%Y.%m.%d'
+          unit: days
+          unit_count: {{.Values.Curator.AppLogsCleanupDays}}
+          field:
+          stats_result:
+          epoch:
+          exclude: False
+        - filtertype: pattern
+          kind: prefix
+          value: app_logs-
+      3:
         action: delete_indices
         description: "Clean up old istio log indices"
         options:

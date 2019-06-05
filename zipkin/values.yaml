@@ -14,6 +14,7 @@ collector:
     cpuLimit: 300m
 
 ui:
+  samlProxy: true
   replicaCount: 1
   imageVersion: 2
   probeStartupDelay: 300
@@ -59,11 +60,11 @@ storageMethod: elasticsearch
 elasticsearch:
   hosts: elasticsearch.infra:9200
   dataHosts: elasticsearch.infra:9200
-#  authEnabled: true
-#  secretName: es-credentials
-#  usernameKey: username
-#  passwordKey: password
-#  nodesWanOnly: true     # Set to true for remote ES
+  secretName: es-credentials
+  usernameKey: username
+  passwordKey: password
+  authEnabled: false
+  nodesWanOnly: false     # Set to true for remote ES
 
 cassandra:
   username: zipkin

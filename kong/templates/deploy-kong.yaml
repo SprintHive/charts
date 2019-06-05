@@ -1,9 +1,5 @@
 apiVersion: extensions/v1beta1
-{{- if eq .Values.HostPort true }}
 kind: DaemonSet
-{{- else }}
-kind: Deployment
-{{- end }}
 metadata:
   name: "{{ printf "%s-%s" .Release.Name .Values.Name | trunc 24 }}"
   labels:
@@ -12,9 +8,6 @@ metadata:
     chart: "{{.Chart.Name}}-{{.Chart.Version}}"
     app: {{.Values.Component}}
 spec:
-  {{- if eq .Values.HostPort false }}
-  replicas: {{ .Values.Replicas }}
-  {{- end }}
   template:
     metadata:
       labels:
