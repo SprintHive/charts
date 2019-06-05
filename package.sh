@@ -17,6 +17,9 @@ declare -a packages=(
   "kibana"
   "jenkins"
   "nexus"
+  "prometheus-operator"
+  "clair"
+  "saml-proxy-injector"
 )
 
 for x in "${packages[@]}"
