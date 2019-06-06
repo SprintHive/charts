@@ -41,7 +41,8 @@ prometheus-operator:
             accessModes: ["ReadWriteOnce"]
             resources:
               requests:
-                storage: 400Gi
+                storage: 50Gi
+      retention: 90d
   alertmanager:
     config:
       receivers:
