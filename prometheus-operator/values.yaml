@@ -14,12 +14,16 @@ prometheus-operator:
   kubelet:
     serviceMonitor:
       https: false
-
+  kubeProxy:
+    enabled: false
   coreDns:
     enabled: false
   kubeDns:
     enabled: true
 
+  prometheusOperator:
+    admissionWebhooks:
+      enabled: false
   prometheus:
     prometheusSpec:
       ruleNamespaceSelector:
@@ -47,7 +51,7 @@ prometheus-operator:
     config:
       receivers:
       - name: 'null'
-      - name: pagerduty
+      - name: default
         pagerduty_configs:
         - routing_key: <TO INSERT>
           severity: '{{ if .CommonLabels.severity }}{{ .CommonLabels.severity | toLower }}{{ else }}critical{{ end }}'
@@ -60,7 +64,7 @@ prometheus-operator:
         - job
         group_wait: 30s
         group_interval: 5m
-        receiver: pagerduty
+        receiver: default
         repeat_interval: 3h
         routes:
         - match:
