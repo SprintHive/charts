@@ -1,5 +1,5 @@
 name: prometheus-operator
-version: 0.0.10
+version: 0.0.11
 description: CoreOS Prometheus Operator with SprintHive rule modifications
 keywords:
   - prometheus

@@ -83,7 +83,7 @@ spec:
       annotations:
         description: '{{`{{$labels.job}}`}} at {{`{{$labels.instance}}`}} has a corrupted write-ahead log (WAL).'
         summary: Prometheus write-ahead log is corrupted
-      expr: tsdb_wal_corruptions_total{job="{{ $prometheusJob }}",namespace="{{ $namespace }}"} > 0
+      expr: prometheus_tsdb_wal_corruptions_total{job="{{ $prometheusJob }}",namespace="{{ $namespace }}"} > 0
       for: 4h
       labels:
         severity: warning
