@@ -110,7 +110,7 @@ spec:
           httpGet:
             path: /status
             port: admin
-          initialDelaySeconds: 90
+          initialDelaySeconds: 10
           periodSeconds: 10
           {{- if eq .Values.DefaultSSL.Override true }}
         volumeMounts:
