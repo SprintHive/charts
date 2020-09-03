@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: "{{ printf "%s-%s" .Release.Name .Values.Name | trunc 64 }}"
@@ -14,7 +14,7 @@ spec:
       labels:
         component: {{.Values.Component}}
     spec:
-      serviceAccount: {{ .Values.Name }}
+      serviceAccountName: {{ .Values.Name }}
       containers:
       - name: {{.Values.Name}}
         image: {{.Values.Image}}
