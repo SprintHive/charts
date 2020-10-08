@@ -8,6 +8,9 @@ metadata:
     chart: "{{.Chart.Name}}-{{.Chart.Version}}"
     app: {{.Values.Component}}
 spec:
+  selector:
+    matchLabels:
+      app: {{.Values.Component}}
   template:
     metadata:
       labels:
