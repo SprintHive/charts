@@ -10,7 +10,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      name: "{{ printf "%s-%s" .Release.Name .Values.Name | trunc 24 }}"
+      app: {{.Values.Component}}
   template:
     metadata:
       labels:
