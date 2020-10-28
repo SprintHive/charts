@@ -15,6 +15,7 @@ Replicas: 3
 ProxyService:
   Type: LoadBalancer
   HttpEnabled: true
+  Annotations: null
 
 DefaultSSL:
   Override: false
