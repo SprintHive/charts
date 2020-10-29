@@ -2,6 +2,10 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kong-proxy
+{{- if .Values.ProxyService.Annotations }}
+  annotations:
+{{ toYaml .Values.ProxyService.Annotations | indent 4 }}
+{{- end }}
 spec:
   type: {{.Values.ProxyService.Type}}
   {{- if and (eq .Values.ProxyService.Type "LoadBalancer") .Values.ProxyService.LoadBalancerIP }}

@@ -111,8 +111,9 @@ spec:
           periodSeconds: 10
         readinessProbe:
           httpGet:
-            path: /status
-            port: admin
+            path: /ping
+            port: proxy-ssl
+            scheme: HTTPS
           initialDelaySeconds: 10
           periodSeconds: 10
           {{- if eq .Values.DefaultSSL.Override true }}
