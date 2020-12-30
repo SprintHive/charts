@@ -16,6 +16,12 @@ spec:
       labels:
         app: {{ .Values.Component }}
     spec:
+      {{- if (not (empty .Values.ImagePullSecrets)) }}
+      imagePullSecrets:
+        {{- range .Values.ImagePullSecrets }}
+           - name: {{ . }}
+        {{- end }}
+      {{- end }}
       {{- if eq .Values.IstioSidecar.enabled true }}
       initContainers:
       - args:
@@ -43,7 +49,7 @@ spec:
       {{- end }}
       containers:
       - name: {{.Values.Name}}
-        image: {{.Values.Image}}
+        image: {{ printf "%s/%s" .Values.Registry .Values.Image }}
         imagePullPolicy: {{.Values.ImagePullPolicy}}
         env:
           {{- if eq .Values.DefaultSSL.Override true }}
