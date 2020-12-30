@@ -3,14 +3,10 @@ Name: kong
 Image: kong:0.13.0
 Registry: docker.io
 ImagePullPolicy: IfNotPresent
-ImagePullSecrets: []
+ImagePullSecrets: ["secret-name"]
 KongDatabase: postgres
 PostgresHost: kong-postgres
 HostPort: false
-IstioSidecar:
-  enabled: false
-  hub: docker.io/istio-release
-  tag: release-1.0-latest-daily
 
 Replicas: 3
 
