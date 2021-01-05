@@ -16,34 +16,15 @@ spec:
       labels:
         app: {{ .Values.Component }}
     spec:
-      {{- if eq .Values.IstioSidecar.enabled true }}
-      initContainers:
-      - args:
-        - -p
-        - "15001"
-        - -u
-        - "1337"
-        - -m
-        - REDIRECT
-        - -i
-        - 10.16.0.0/14
-        - -x
-        - ""
-        - -d
-        - ""
-        image: {{ .Values.IstioSidecar.hub }}/proxy_init:{{ .Values.IstioSidecar.tag }}
-        imagePullPolicy: IfNotPresent
-        name: istio-init
-        resources: {}
-        securityContext:
-          capabilities:
-            add:
-            - NET_ADMIN
-          privileged: true
+      {{- if (not (empty .Values.ImagePullSecrets)) }}
+      imagePullSecrets:
+      {{- range .Values.ImagePullSecrets }}
+        - name: {{ . }}
+      {{- end }}
       {{- end }}
       containers:
       - name: {{.Values.Name}}
-        image: {{.Values.Image}}
+        image: "{{ .Values.Image }}:{{ .Values.Tag }}"
         imagePullPolicy: {{.Values.ImagePullPolicy}}
         env:
           {{- if eq .Values.DefaultSSL.Override true }}
@@ -122,84 +103,10 @@ spec:
             mountPath: /usr/local/kong/ssl/default/
             readOnly: true
           {{- end }}
-      {{- if eq .Values.IstioSidecar.enabled true }}
-      - args:
-        - proxy
-        - sidecar
-        - --configPath
-        - /etc/istio/proxy
-        - --binaryPath
-        - /usr/local/bin/envoy
-        - --serviceCluster
-        - istio-proxy
-        - --drainDuration
-        - 45s
-        - --parentShutdownDuration
-        - 1m0s
-        - --discoveryAddress
-        - istio-pilot.istio-system:15007
-        - --discoveryRefreshDelay
-        - 10s
-        - --zipkinAddress
-        - zipkin.infra:9411
-        - --connectTimeout
-        - 10s
-        - --statsdUdpAddress
-        - istio-statsd-prom-bridge.istio-system:9125
-        - --proxyAdminPort
-        - "15000"
-        - --controlPlaneAuthPolicy
-        - NONE
-        env:
-        - name: POD_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
-        - name: POD_NAMESPACE
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.namespace
-        - name: INSTANCE_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
-        - name: ISTIO_META_POD_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
-        - name: ISTIO_META_INTERCEPTION_MODE
-          value: REDIRECT
-        image: {{ .Values.IstioSidecar.hub }}/proxyv2:{{ .Values.IstioSidecar.tag }}
-        imagePullPolicy: IfNotPresent
-        name: istio-proxy
-        resources:
-          requests:
-            cpu: 100m
-            memory: 128Mi
-        securityContext:
-          privileged: false
-          readOnlyRootFilesystem: true
-          runAsUser: 1337
-        volumeMounts:
-        - mountPath: /etc/istio/proxy
-          name: istio-envoy
-        - mountPath: /etc/certs/
-          name: istio-certs
-          readOnly: true
-      {{- end }}
       volumes:
       {{- if eq .Values.DefaultSSL.Override true }}
       - name: kong-default-tls
         secret:
           defaultMode: 420
           secretName: kong-default-tls
-      {{- end }}
-      {{- if eq .Values.IstioSidecar.enabled true }}
-      - emptyDir:
-          medium: Memory
-        name: istio-envoy
-      - name: istio-certs
-        secret:
-          optional: true
-          secretName: istio.default
       {{- end }}

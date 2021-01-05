@@ -1,14 +1,12 @@
 Component: kong
 Name: kong
-Image: kong:0.13.0
+Image: docker.io/kong
+Tag: 0.13.0
 ImagePullPolicy: IfNotPresent
+ImagePullSecrets: []
 KongDatabase: postgres
 PostgresHost: kong-postgres
 HostPort: false
-IstioSidecar:
-  enabled: false
-  hub: gcr.io/istio-release
-  tag: release-1.0-latest-daily
 
 Replicas: 3
 
