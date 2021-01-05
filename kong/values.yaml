@@ -2,7 +2,6 @@ Component: kong
 Name: kong
 Image: docker.io/kong
 Tag: 0.13.0
-Registry: docker.io
 ImagePullPolicy: IfNotPresent
 ImagePullSecrets: []
 KongDatabase: postgres
