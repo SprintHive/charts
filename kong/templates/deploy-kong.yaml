@@ -24,7 +24,7 @@ spec:
       {{- end }}
       containers:
       - name: {{.Values.Name}}
-        image: {{ printf "%s/%s" .Values.Registry .Values.Image }}
+        image: "{{ .Values.Image }}:{{ .Values.Tag }}"
         imagePullPolicy: {{.Values.ImagePullPolicy}}
         env:
           {{- if eq .Values.DefaultSSL.Override true }}

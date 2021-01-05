@@ -1,9 +1,10 @@
 Component: kong
 Name: kong
-Image: kong:0.13.0
+Image: docker.io/kong
+Tag: 0.13.0
 Registry: docker.io
 ImagePullPolicy: IfNotPresent
-ImagePullSecrets: ["secret-name"]
+ImagePullSecrets: []
 KongDatabase: postgres
 PostgresHost: kong-postgres
 HostPort: false
