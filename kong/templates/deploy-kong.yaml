@@ -19,7 +19,7 @@ spec:
       {{- if (not (empty .Values.ImagePullSecrets)) }}
       imagePullSecrets:
       {{- range .Values.ImagePullSecrets }}
-         - name: {{ . }}
+        - name: {{ . }}
       {{- end }}
       {{- end }}
       containers:
