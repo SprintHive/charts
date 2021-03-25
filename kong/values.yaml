@@ -1,7 +1,7 @@
 Component: kong
 Name: kong
-Image: docker.io/kong
-Tag: 0.13.0
+Image: eu.gcr.io/honeycomb-release/kong
+Tag: 0.13.0.1
 ImagePullPolicy: IfNotPresent
 ImagePullSecrets: []
 KongDatabase: postgres
