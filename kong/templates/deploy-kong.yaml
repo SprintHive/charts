@@ -63,6 +63,8 @@ spec:
               fieldRef:
                 apiVersion: v1
                 fieldPath: status.podIP
+          - name: KONG_CUSTOM_PLUGINS
+            value: jwtheaders
         ports:
         - name: admin
           containerPort: 8001
