@@ -8,6 +8,10 @@ metadata:
     chart: "{{.Chart.Name}}-{{.Chart.Version}}"
     app: {{.Values.Component}}
 spec:
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: {{.Values.Component}}
