@@ -69,6 +69,13 @@ spec:
                 fieldPath: status.podIP
           - name: KONG_CUSTOM_PLUGINS
             value: jwtheaders
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - "/bin/sh"
+              - "-c"
+              - "sleep 60 && kong quit -t 60"
         ports:
         - name: admin
           containerPort: 8001
@@ -116,3 +123,4 @@ spec:
           defaultMode: 420
           secretName: kong-default-tls
       {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.TerminationGracePeriodSeconds | default 90 }}
