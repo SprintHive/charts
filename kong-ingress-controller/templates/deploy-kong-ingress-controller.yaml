@@ -9,6 +9,9 @@ metadata:
     component: {{.Values.Component}}
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      component: {{.Values.Component}}
   template:
     metadata:
       labels:
