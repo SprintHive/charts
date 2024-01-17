@@ -1,11 +1,21 @@
 Component: kong
 Name: kong
-Image: kong:0.10.3
+Image: eu.gcr.io/honeycomb-release/kong
+Tag: 0.13.0.1
 ImagePullPolicy: IfNotPresent
-KongDatabase: cassandra
-CassandraContactPoints: kong-cassandra.infra
-CassandraReplFactor: 2
+ImagePullSecrets: []
+KongDatabase: postgres
+PostgresHost: kong-postgres
+HostPort: false
+
+Replicas: 3
 
 ProxyService:
-  Type: ClusterIP
+  Type: LoadBalancer
   HttpEnabled: true
+  Annotations: null
+
+DefaultSSL:
+  Override: false
+  SSLCert: kong-default.crt
+  SSLKey: kong-default.key

@@ -1,0 +1,29 @@
+# Minikube stores its logs in a seperate directory.
+# enable if started in minikube.
+on_minikube: false
+
+image:
+  fluent_bit:
+    repository: fluent/fluent-bit
+    tag: 0.13
+  pullPolicy: IfNotPresent
+
+backend:
+  type: es
+  es:
+    host: elasticsearch
+    port: 9200
+    tls: false
+    auth:
+      enabled: false
+      user: user
+      password: password
+
+env: []
+
+resources:
+  limits:
+    memory: 200Mi
+  requests:
+    cpu: 100m
+    memory: 200Mi

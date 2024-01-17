@@ -1,0 +1,4 @@
+Component: kong-ingress-controller
+Name: kong-ingress-controller
+Image: eu.gcr.io/honeycomb-release/kong-ingress-controller:v0.1.0
+ImagePullPolicy: IfNotPresent

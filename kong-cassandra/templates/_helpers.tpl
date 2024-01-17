@@ -15,3 +15,12 @@ and Statefulset will append -xx at the end of name.
 {{- $name := default .Chart.Name .Values.nameOverride -}}
 {{- printf "%s-%s" .Release.Name $name | trunc 21 -}}
 {{- end -}}
+
+{{/* Labels for the resources */}}
+{{- define "labels" }}
+  labels:
+    app: {{ template "fullname" $ }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+{{- end }}

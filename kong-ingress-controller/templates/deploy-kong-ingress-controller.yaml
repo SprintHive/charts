@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ printf "%s-%s" .Release.Name .Values.Name | trunc 64 }}"
+  labels:
+    heritage: {{.Release.Service | quote }}
+    release: {{.Release.Name | quote }}
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+    component: {{.Values.Component}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: {{.Values.Component}}
+  template:
+    metadata:
+      labels:
+        component: {{.Values.Component}}
+    spec:
+      serviceAccountName: {{ .Values.Name }}
+      containers:
+      - name: {{.Values.Name}}
+        image: {{.Values.Image}}
+        imagePullPolicy: {{.Values.ImagePullPolicy}}

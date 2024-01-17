@@ -2,18 +2,28 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kong-proxy
+{{- if .Values.ProxyService.Annotations }}
+  annotations:
+{{ toYaml .Values.ProxyService.Annotations | indent 4 }}
+{{- end }}
 spec:
   type: {{.Values.ProxyService.Type}}
+  {{- if and (eq .Values.ProxyService.Type "LoadBalancer") .Values.ProxyService.LoadBalancerIP }}
+  loadBalancerIP: {{ .Values.ProxyService.LoadBalancerIP }}
+  {{- end}}
+  {{- if eq .Values.ProxyService.Type "LoadBalancer" }}
+  externalTrafficPolicy: Local
+  {{- end}}
   ports:
   {{- if eq .Values.ProxyService.HttpEnabled true}}
-  - name: kong-proxy-http
+  - name: http
     port: 80
-    targetPort: 8000
+    targetPort: 80
     protocol: TCP
   {{- end}}
-  - name: kong-proxy-https
+  - name: https
     port: 443
-    targetPort: 8443
+    targetPort: 443
     protocol: TCP
   selector:
-    component: {{.Values.Component}}
+    app: {{.Values.Component}}

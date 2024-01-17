@@ -10,4 +10,4 @@ spec:
     targetPort: 8001
     protocol: TCP
   selector:
-    component: {{.Values.Component}}
+    app: {{.Values.Component}}

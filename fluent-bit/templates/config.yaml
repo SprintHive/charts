@@ -1,0 +1,157 @@
+{{- define "es_connection_details" }}
+    Host            {{ .Values.backend.es.host }}
+    Port            {{ .Values.backend.es.port }}
+{{- if .Values.backend.es.auth.enabled }}
+    HTTP_User       {{ .Values.backend.es.auth.user }}
+    HTTP_Passwd     {{ .Values.backend.es.auth.password }}
+{{- end }}
+{{- if .Values.backend.es.tls }}
+    tls             On
+{{- end }}
+{{- end }}
+{{- define "parsers-config" }}
+[PARSER]
+    Name         istio_proxy
+    Format       regex
+    Regex        ^\[(?<time>[^\]]*)](\[(?<code>[^\]]*)\])?(\[(?<level>[^\]]*)\])?(\[(?<module>[^\]]*)\])?(?<message>.*)$
+    Time_Key     time
+    Time_Format %Y-%m-%d %H:%M:%S
+    Time_Format %Y-%m-%dT%H:%M:%S.%L%z
+
+[PARSER]
+    Name         docker_utf8
+    Format       json
+    Time_Key     time
+    Time_Format  %Y-%m-%dT%H:%M:%S.%L
+    Decode_Field_As   escaped_utf8    log
+{{- end }}
+{{- define "fluent-bit-config" }}
+[SERVICE]
+    Flush        1
+    Daemon       Off
+    Log_Level    info
+    Parsers_File parsers.conf
+    Parsers_File custom-parsers.conf
+
+[INPUT]
+    Name             tail
+    Path             /var/log/containers/*.log
+    Exclude_Path     *istio*
+    Parser           docker
+    Tag              container_logs_text.*
+    Refresh_Interval 5
+    Mem_Buf_Limit    10MB
+    Skip_Long_Lines  On
+    DB               /var/tmp/fluent-bit.db
+
+[INPUT]
+    Name             tail
+    Path             /var/log/containers/*istio-proxy*.log
+    Tag              istio_proxy_container_logs_text.*
+    Parser           docker_utf8
+    Refresh_Interval 5
+    Mem_Buf_Limit    10MB
+    Skip_Long_Lines  On
+    DB               /var/tmp/fluent-bit-istio-proxy.db
+
+[INPUT]
+    Name             tail
+    Path             /var/log/containers/*istio-pilot*discovery*.log
+    Tag              istio_generic_container_logs_json.*
+    Parser           docker_utf8
+    Refresh_Interval 5
+    Mem_Buf_Limit    10MB
+    Skip_Long_Lines  On
+    DB               /var/tmp/fluent-bit-istio-generic.db
+
+[INPUT]
+    Name             tail
+    Path             /var/log/containers/*istio*mixer*.log
+    Tag              istio_generic_container_logs_json.*
+    Parser           docker_utf8
+    Refresh_Interval 5
+    Mem_Buf_Limit    10MB
+    Skip_Long_Lines  On
+    DB               /var/tmp/fluent-bit-istio-generic.db
+
+[INPUT]
+    Name          tcp
+    Listen        0.0.0.0
+    Port          5170
+    Chunk_Size    32
+    Buffer_Size   64
+    Mem_Buf_Limit 10MB
+    Tag           app_logs
+
+[FILTER]
+    Name   kubernetes
+    Match  *container_logs_text*
+
+[FILTER]
+    Name      kubernetes
+    Match     *container_logs_json*
+    Merge_Log On
+
+[FILTER]
+    Name         parser
+    Match        istio_proxy_container_logs_text.*
+    Key_Name     log
+    Parser       istio_proxy
+    Reserve_Data True
+
+[FILTER]
+    Name   modify
+    Match  istio_generic_container_logs_json.*
+    Rename msg message
+
+{{ if eq .Values.backend.type "test" }}
+[OUTPUT]
+    Name  file
+    Match *
+    Path /tmp/fluent-bit.log
+{{ else if eq .Values.backend.type "forward" }}
+[OUTPUT]
+    Name            forward
+    Match           *
+    Host            {{ .Values.backend.forward.host }}
+    Port            {{ .Values.backend.forward.port }}
+    Retry_Limit     False
+{{ else if eq .Values.backend.type "es" }}
+[OUTPUT]
+    Name            es
+    Match           container_logs_text.*
+    {{- template "es_connection_details" . }}
+    Logstash_Format On
+    Retry_Limit     False
+    Time_Key        @timestamp
+
+[OUTPUT]
+    Name            es
+    Match           *istio*
+    {{- template "es_connection_details" . }}
+    Logstash_Format On
+    Retry_Limit     False
+    Time_Key        @timestamp
+    Logstash_Prefix istio_logs
+
+[OUTPUT]
+    Name            es
+    Match           app_logs
+    {{- template "es_connection_details" . }}
+    Logstash_Format On
+    Retry_Limit     False
+    Time_Key        @fb_timestamp
+    Logstash_Prefix app_logs
+{{- end }}
+{{- end }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ template "fullname" . }}-config
+  labels:
+    app: {{ template "fullname" . }}
+data:
+  custom-parsers.conf: |-
+    {{ include "parsers-config" . | b64enc}}
+  fluent-bit.conf: |-
+    {{ include "fluent-bit-config" . | b64enc }}

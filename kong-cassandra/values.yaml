@@ -1,5 +1,6 @@
 ## Cassandra image version
 ## ref: https://hub.docker.com/r/library/cassandra/
+clusterProfile: production
 image:
   repo: "cassandra"
   tag: "3.11"
@@ -10,40 +11,8 @@ image:
 service:
   type: ClusterIP
 
-## Persist data to a persitent volume
-persistence:
-  enabled: true
-  ## If defined, volume.beta.kubernetes.io/storage-class: <storageClass>
-  ## Default: volume.alpha.kubernetes.io/storage-class: default
-  #  storageClass: generic
-  accessMode: ReadWriteOnce
-  size: 1Gi
-
-## Configure resource requests and limits
-## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-## Minimum memory for development is 4GB and 2 CPU cores
-## Minimum memory for production is 8GB and 4 CPU cores
-## ref: http://docs.datastax.com/en/archived/cassandra/2.0/cassandra/architecture/architecturePlanningHardware_c.html
-resources:
-  requests:
-    memory: 1Gi
-    cpu: 600m
-  limits:
-    memory: 1Gi
-    cpu: 1000m
-
-## Change cassandra configuration paramaters below:
-## ref: http://docs.datastax.com/en/cassandra/3.0/cassandra/configuration/configCassandra_yaml.html
-## Recommended max heap size is 1/2 of system memory
-## Recommeneed heap new size is 1/4 of max heap size
-## ref: http://docs.datastax.com/en/cassandra/3.0/cassandra/operations/opsTuneJVM.html
 config:
   cluster_name: kong-cassandra
-  cluster_size: 3
-  seed_size: 2
-  num_tokens: 256
-  max_heap_size: 650M
-  heap_new_size: 650M
   ports:
     cql: 9042
     thrift: 9160
@@ -53,3 +22,61 @@ config:
 # selector:
   # nodeSelector:
     # cloud.google.com/gke-nodepool: pool-db
+
+## Local profile
+
+local:
+  persistence:
+    enabled: false
+
+  resources:
+    requests:
+      memory: 0.7Gi
+      cpu: 0.3
+    limits:
+      memory: 0.7Gi
+      cpu: 0.5
+
+  config:
+    cluster_size: 1
+    seed_size: 1
+    num_tokens: 1
+    max_heap_size: 300M
+    heap_new_size: 80M
+
+## Production profile
+
+production:
+  ## Persist data to a persitent volume
+  persistence:
+    enabled: true
+    ## If defined, volume.beta.kubernetes.io/storage-class: <storageClass>
+    ## Default: volume.alpha.kubernetes.io/storage-class: default
+    storageClass: standard
+    accessMode: ReadWriteOnce
+    size: 1Gi
+
+  ## Configure resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## Minimum memory for development is 4GB and 2 CPU cores
+  ## Minimum memory for production is 8GB and 4 CPU cores
+  ## ref: http://docs.datastax.com/en/archived/cassandra/2.0/cassandra/architecture/architecturePlanningHardware_c.html
+  resources:
+    requests:
+      memory: 1.5Gi
+      cpu: 100m
+    limits:
+      memory: 1.5Gi
+
+  ## Change cassandra configuration paramaters below:
+  ## ref: http://docs.datastax.com/en/cassandra/3.0/cassandra/configuration/configCassandra_yaml.html
+  ## Recommended max heap size is 1/2 of system memory
+  ## Recommeneed heap new size is 1/4 of max heap size
+  ## ref: http://docs.datastax.com/en/cassandra/3.0/cassandra/operations/opsTuneJVM.html
+  config:
+    cluster_size: 3
+    seed_size: 2
+    num_tokens: 256
+    max_heap_size: 800M
+    heap_new_size: 175M
+

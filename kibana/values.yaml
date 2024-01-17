@@ -1,0 +1,4 @@
+Name: kibana
+Image: docker.elastic.co/kibana/kibana:5.5.1
+ESEndpoint: elasticsearch.infra:9200
+XPackEnabled: "false"

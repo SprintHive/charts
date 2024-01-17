@@ -1,0 +1,18 @@
+{{- if eq .Values.ClusterProfile "local"}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.Values.Service.Name}}
+  labels:
+    component: {{.Values.Component}}
+    role: {{.Values.Local.SingleNode.Role}}
+spec:
+  type: ClusterIP
+  selector:
+    component: {{.Values.Component}}
+    role: {{.Values.Local.SingleNode.Role}}
+  ports:
+  - name: http
+    port: 9200
+    protocol: TCP
+{{- end}}

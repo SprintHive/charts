@@ -1,0 +1,3 @@
+image:
+  repository: quay.io/sprinthive/saml-proxy-injector
+  tag: 0.1.16

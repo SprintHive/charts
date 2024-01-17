@@ -1,0 +1,75 @@
+createRules: true
+grafana:
+  enabled: false
+
+prometheus-operator:
+  defaultRules:
+    create: false
+  kubeControllerManager:
+    enabled: false
+  kubeScheduler:
+    enabled: false
+  kubeEtcd:
+    enabled: false
+  kubelet:
+    serviceMonitor:
+      https: false
+  kubeProxy:
+    enabled: false
+  coreDns:
+    enabled: false
+  kubeDns:
+    enabled: true
+
+  prometheusOperator:
+    admissionWebhooks:
+      enabled: false
+    tlsProxy:
+      enabled: false
+  prometheus:
+    prometheusSpec:
+      ruleNamespaceSelector:
+        any: true
+      serviceMonitorNamespaceSelector:
+        any: true
+      serviceMonitorSelectorNilUsesHelmValues: false
+      ruleSelectorNilUsesHelmValues: false
+      resources:
+        limits:
+          cpu: 500m
+          memory: 3Gi
+        requests:
+          cpu: 500m
+          memory: 3Gi
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            accessModes: ["ReadWriteOnce"]
+            resources:
+              requests:
+                storage: 50Gi
+      retention: 90d
+  alertmanager:
+    config:
+      receivers:
+      - name: 'null'
+      - name: default
+        pagerduty_configs:
+        - routing_key: <TO INSERT>
+          severity: '{{ if .CommonLabels.severity }}{{ .CommonLabels.severity | toLower }}{{ else }}critical{{ end }}'
+      - name: healthchecks-io
+        webhook_configs:
+        - url: <TO INSERT>
+
+      route:
+        group_by:
+        - job
+        group_wait: 30s
+        group_interval: 5m
+        receiver: default
+        repeat_interval: 3h
+        routes:
+        - match:
+            alertname: Watchdog
+          receiver: healthchecks-io
+          repeat_interval: 5m

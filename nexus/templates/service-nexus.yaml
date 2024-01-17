@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    expose: 'false'
+    project: {{ .Values.name }}
+  name: nexus
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8081
+  selector:
+    project: {{ .Values.name }}
+  sessionAffinity: None
+  type: ClusterIP
