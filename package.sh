@@ -7,17 +7,8 @@ rm -rf packages
 mkdir -p packages
 
 declare -a packages=(
-  "elasticsearch"
   "kong"
-  "kong-cassandra"
   "kong-ingress-controller"
-  "fluent-bit"
-  "zipkin"
-  "kibana"
-  "nexus"
-  "prometheus-operator"
-  "clair"
-  "saml-proxy-injector"
 )
 
 for x in "${packages[@]}"
