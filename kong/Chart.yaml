@@ -1,4 +1,4 @@
-name: kong
-version: 0.4.2
-description: An API Gateway
 apiVersion: v1
+description: An API Gateway
+name: kong
+version: 0.4.3
