@@ -1,4 +1,0 @@
-dependencies:
-  - name: prometheus-operator
-    version: "~6.11"
-    repository: "@stable"

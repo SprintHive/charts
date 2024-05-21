@@ -1,3 +1,0 @@
-name: nexus
-image: fabric8/nexus:2.2.311
-storageType: standard # standard | gp2

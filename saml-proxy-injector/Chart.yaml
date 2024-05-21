@@ -1,4 +1,0 @@
-apiVersion: v1
-description: SAML Proxy Injector via Mutating Webhook
-name: saml-proxy-injector
-version: 0.1.7

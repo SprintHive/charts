@@ -1,5 +1,0 @@
-apiVersion: v1
-description: Zipkin distributed tracing
-name: zipkin
-version: 0.6.4
-icon: https://avatars1.githubusercontent.com/u/11860887

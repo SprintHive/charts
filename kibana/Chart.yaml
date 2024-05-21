@@ -1,9 +1,0 @@
-name: kibana
-version: 0.0.1
-description: A tool to visuzalize elasticsearch data
-keywords:
-  - elasticsearch
-  - kibana
-home: https://github.com/SprintHive/charts/
-sources:
-  - https://github.com/SprintHive/charts

@@ -1,8 +1,0 @@
-name: elasticsearch
-version: 0.0.1
-description: A multi-node elasticsearch cluster secured with TLS
-keywords:
-  - elasticsearch
-home: https://github.com/SprintHive/chart-elasticsearch
-sources:
-  - https://github.com/SprintHive/chart-elasticsearch
