@@ -9,6 +9,7 @@ mkdir -p packages
 declare -a packages=(
   "kong"
   "kong-ingress-controller"
+  "fluentd-logdna"
 )
 
 for x in "${packages[@]}"
