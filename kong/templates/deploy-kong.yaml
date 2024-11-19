@@ -71,6 +71,8 @@ spec:
             value: jwtheaders
           - name: KONG_ANONYMOUS_REPORTS
             value: "off"
+          - name: KONG_DNS_STALE_TTL
+            value: "120"
         lifecycle:
           preStop:
             exec:
