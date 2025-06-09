@@ -73,6 +73,8 @@ spec:
             value: "off"
           - name: KONG_DNS_STALE_TTL
             value: "3600"
+          - name: KONG_SERVER_TOKENS
+            value: "off"
         lifecycle:
           preStop:
             exec:
